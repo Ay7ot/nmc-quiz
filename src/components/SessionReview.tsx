@@ -19,6 +19,7 @@ interface SessionReviewProps {
   defaultFilter?: "all" | "wrong" | "skipped";
   title?: string;
   showFilters?: boolean;
+  showTitle?: boolean;
 }
 
 export function SessionReview({
@@ -26,6 +27,7 @@ export function SessionReview({
   defaultFilter = "all",
   title = "Answer review",
   showFilters = true,
+  showTitle = true,
 }: SessionReviewProps) {
   const [filter, setFilter] = useState<"all" | "wrong" | "skipped">(defaultFilter);
 
@@ -40,23 +42,34 @@ export function SessionReview({
 
   return (
     <section className="panel review-panel">
-      <h2 className="panel-title type-title-md">
-        <Icon icon={ClipboardList} size="sm" className="inline-icon" />
-        {title}
-      </h2>
+      {showTitle && (
+        <h2 className="panel-title type-title-md">
+          <Icon icon={ClipboardList} size="sm" className="inline-icon" />
+          {title}
+        </h2>
+      )}
 
       {showFilters && (
-      <div className="review-filters">
-        <FilterBtn active={filter === "all"} onClick={() => setFilter("all")}>
-          All ({items.length})
-        </FilterBtn>
-        <FilterBtn active={filter === "wrong"} onClick={() => setFilter("wrong")}>
-          Wrong ({wrongCount})
-        </FilterBtn>
-        <FilterBtn active={filter === "skipped"} onClick={() => setFilter("skipped")}>
-          Unanswered ({skippedCount})
-        </FilterBtn>
-      </div>
+        <div className="review-filters" role="tablist" aria-label="Filter answers">
+          <FilterBtn active={filter === "all"} onClick={() => setFilter("all")}>
+            All · {items.length}
+          </FilterBtn>
+          <FilterBtn
+            active={filter === "wrong"}
+            onClick={() => setFilter("wrong")}
+            variant="warn"
+            disabled={wrongCount === 0}
+          >
+            Wrong · {wrongCount}
+          </FilterBtn>
+          <FilterBtn
+            active={filter === "skipped"}
+            onClick={() => setFilter("skipped")}
+            disabled={skippedCount === 0}
+          >
+            Skipped · {skippedCount}
+          </FilterBtn>
+        </div>
       )}
 
       <ul className="review-list">
@@ -66,7 +79,15 @@ export function SessionReview({
       </ul>
 
       {filtered.length === 0 && (
-        <p className="review-empty type-body-md">Nothing in this filter.</p>
+        <p className="review-empty type-body-md">
+          {filter === "wrong" && wrongCount === 0
+            ? "No wrong answers in this session."
+            : filter === "skipped" && skippedCount === 0
+              ? "You answered every question."
+              : filter === "all"
+                ? "No questions to show."
+                : `No ${filter === "wrong" ? "wrong" : "skipped"} answers in this filter.`}
+        </p>
       )}
     </section>
   );
@@ -76,14 +97,25 @@ function FilterBtn({
   active,
   onClick,
   children,
+  variant,
+  disabled,
 }: {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  variant?: "warn";
+  disabled?: boolean;
 }) {
   return (
-    <button type="button" className={`review-filter ${active ? "on" : ""}`} onClick={onClick}>
-      {children}
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      className={`stat-pill stat-pill-btn ${variant ?? ""} ${active ? "on" : ""}`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      <span className="stat-pill-label type-label-sm">{children}</span>
     </button>
   );
 }

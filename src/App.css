@@ -1169,26 +1169,18 @@
 .review-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.375rem;
-  margin-bottom: 1rem;
+  gap: var(--sys-space-2);
+  margin-bottom: var(--sys-space-3);
 }
 
-.review-filter {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: var(--sys-shape-full);
-  background: var(--paper-deep);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--ink-muted);
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+.review-filters .stat-pill-btn {
+  min-width: 0;
+  padding: var(--sys-space-2) var(--sys-space-3);
 }
 
-.review-filter.on {
-  background: var(--teal-soft);
-  border-color: var(--teal);
-  color: var(--teal);
+.review-filters .stat-pill-label {
+  font-size: 0.6875rem;
+  white-space: nowrap;
 }
 
 .review-list {
@@ -1606,6 +1598,191 @@
 .review-lead {
   color: var(--ink-muted);
   margin: var(--sys-space-1) 0 0;
+  max-width: 36ch;
+}
+
+.review-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sys-space-2);
+}
+
+.review-step-label {
+  display: flex;
+  align-items: center;
+  gap: var(--sys-space-2);
+  margin: 0;
+  color: var(--ink-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.review-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--sys-shape-full);
+  background: var(--teal-soft);
+  color: var(--teal);
+  font-size: 0.6875rem;
+  font-weight: 800;
+}
+
+.review-session-scroll {
+  display: flex;
+  gap: var(--sys-space-2);
+  overflow-x: auto;
+  padding: 2px var(--sys-space-1) var(--sys-space-2);
+  margin: 0 calc(-1 * var(--sys-space-1));
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.review-session-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.review-session-chip {
+  flex: 0 0 auto;
+  min-width: 6.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: var(--sys-space-3);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper-deep);
+  cursor: pointer;
+  text-align: left;
+  scroll-snap-align: start;
+  position: relative;
+  transition:
+    border-color var(--sys-motion-short),
+    background var(--sys-motion-short),
+    transform var(--sys-motion-short),
+    box-shadow var(--sys-motion-short);
+}
+
+.review-session-chip:active {
+  transform: scale(0.98);
+}
+
+.review-session-chip.on {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+.review-session-chip.good .review-session-chip-score {
+  color: var(--green);
+}
+
+.review-session-chip.mid .review-session-chip-score {
+  color: var(--gold);
+}
+
+.review-session-chip.low .review-session-chip-score {
+  color: var(--rose);
+}
+
+.review-session-chip-score {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1;
+}
+
+.review-session-chip-date {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.review-session-chip-meta {
+  color: var(--ink-muted);
+  line-height: 1.2;
+}
+
+.review-session-chip-best {
+  position: absolute;
+  top: var(--sys-space-2);
+  right: var(--sys-space-2);
+  color: var(--gold);
+}
+
+.review-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sys-space-3);
+}
+
+.review-summary-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sys-space-3);
+}
+
+.review-summary-score {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--teal);
+}
+
+.review-summary-score.good { color: var(--green); }
+.review-summary-score.mid { color: var(--gold); }
+.review-summary-score.low { color: var(--rose); }
+
+.review-summary-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-summary-title {
+  margin: 0;
+}
+
+.review-summary-meta {
+  margin: 2px 0 0;
+  color: var(--ink-muted);
+}
+
+.review-summary-stats {
+  margin: 0;
+}
+
+.review-summary-note {
+  display: flex;
+  align-items: center;
+  gap: var(--sys-space-2);
+  margin: 0;
+  padding: var(--sys-space-3);
+  border-radius: var(--radius-md);
+  background: var(--green-soft);
+  color: var(--ink-muted);
+}
+
+.review-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sys-space-2);
+  text-align: center;
+  color: var(--ink-muted);
+  padding: var(--sys-space-6) var(--sys-space-4);
+}
+
+.review-no-data {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sys-space-2);
 }
 
 .stat-pill-btn {
