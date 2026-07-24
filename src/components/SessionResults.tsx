@@ -66,6 +66,14 @@ export function SessionResults({
       <div className="ambient ambient-a" aria-hidden />
       <div className="ambient ambient-b" aria-hidden />
 
+      <header className="results-nav">
+        <button type="button" className="results-nav-home" onClick={onHome}>
+          <Icon icon={Home} size="sm" />
+          Home
+        </button>
+        <span className="results-nav-title type-label-sm">Session results</span>
+      </header>
+
       {isNewHighScore && (
         <div className="new-high-banner">
           <Icon icon={Sparkles} size="sm" />

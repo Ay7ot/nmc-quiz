@@ -57,6 +57,8 @@ export interface SessionRecord {
   scorePercent: number;
   durationMs: number;
   settings: QuizSettings;
+  /** Per-question answers — available for sessions completed after this field was added */
+  answers?: Record<number, { selected: string; correct: boolean }>;
 }
 
 export interface ActiveSession {
@@ -104,9 +106,9 @@ export interface StatsSnapshot {
   chartSessions: { label: string; score: number; date: string }[];
 }
 
-export type Screen = "home" | "stats" | "quiz" | "results";
+export type Screen = "home" | "stats" | "review" | "quiz" | "results";
 
-export type Tab = "practice" | "stats";
+export type Tab = "practice" | "review" | "stats";
 
 export const SESSION_SIZE_PRESETS = [10, 20, 30, 50, 100] as const;
 

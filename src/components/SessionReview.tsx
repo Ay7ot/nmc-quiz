@@ -17,9 +17,16 @@ export interface ReviewItem {
 interface SessionReviewProps {
   items: ReviewItem[];
   defaultFilter?: "all" | "wrong" | "skipped";
+  title?: string;
+  showFilters?: boolean;
 }
 
-export function SessionReview({ items, defaultFilter = "all" }: SessionReviewProps) {
+export function SessionReview({
+  items,
+  defaultFilter = "all",
+  title = "Answer review",
+  showFilters = true,
+}: SessionReviewProps) {
   const [filter, setFilter] = useState<"all" | "wrong" | "skipped">(defaultFilter);
 
   const filtered = items.filter((item) => {
@@ -35,9 +42,10 @@ export function SessionReview({ items, defaultFilter = "all" }: SessionReviewPro
     <section className="panel review-panel">
       <h2 className="panel-title type-title-md">
         <Icon icon={ClipboardList} size="sm" className="inline-icon" />
-        Answer review
+        {title}
       </h2>
 
+      {showFilters && (
       <div className="review-filters">
         <FilterBtn active={filter === "all"} onClick={() => setFilter("all")}>
           All ({items.length})
@@ -49,6 +57,7 @@ export function SessionReview({ items, defaultFilter = "all" }: SessionReviewPro
           Unanswered ({skippedCount})
         </FilterBtn>
       </div>
+      )}
 
       <ul className="review-list">
         {filtered.map((item) => (

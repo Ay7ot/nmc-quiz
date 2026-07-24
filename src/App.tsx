@@ -5,6 +5,7 @@ import { InstallBanner } from "./components/InstallBanner";
 import { QuizScreen, useAutoAdvance } from "./components/QuizScreen";
 import { SessionResults } from "./components/SessionResults";
 import type { ReviewItem } from "./components/SessionReview";
+import { ReviewScreen } from "./components/ReviewScreen";
 import { SettingsForm } from "./components/SettingsForm";
 import { StatsScreen } from "./components/StatsScreen";
 import { UpdatePrompt } from "./components/UpdatePrompt";
@@ -26,6 +27,7 @@ import {
 import type {
   ActiveSession,
   Question,
+  QuizSettings,
   Screen,
   SessionRecord,
   Tab,
@@ -71,6 +73,12 @@ function App() {
   );
 
   const poolSize = pool.length;
+
+  const getQuestion = useCallback(
+    (id: number) => questionMap.get(id),
+    [questionMap],
+  );
+
   const session = activeSession;
   const currentId = session?.questionIds[session.currentIndex];
   const current = currentId != null ? questionMap.get(currentId) : undefined;
@@ -94,7 +102,7 @@ function App() {
 
   const commitCurrentSelection = useCallback(
     (answers: Record<number, { selected: string; correct: boolean }>) => {
-      if (!session || session.settings.mode === "exam" || !current || selected.length === 0) {
+      if (!session || !current || selected.length === 0) {
         return answers;
       }
       const next = commitSelection(answers, current, selected);
@@ -108,21 +116,22 @@ function App() {
   );
 
   const beginSession = useCallback(
-    (resume = false) => {
+    (resume = false, overrides?: Partial<QuizSettings>) => {
       if (resume && activeSession) {
         loadQuestionState(activeSession.questionIds[activeSession.currentIndex]);
         setScreen("quiz");
         return;
       }
 
-      const ids = buildSessionOrder(ALL_QUESTIONS, progress, settings);
+      const sessionSettings = { ...settings, ...overrides };
+      const ids = buildSessionOrder(ALL_QUESTIONS, progress, sessionSettings);
       if (ids.length === 0) return;
 
       const newSession: ActiveSession = {
         id: sessionId(),
         startedAt: new Date().toISOString(),
         questionIds: ids,
-        settings: { ...settings },
+        settings: sessionSettings,
         currentIndex: 0,
         sessionAnswers: {},
       };
@@ -134,11 +143,40 @@ function App() {
     [activeSession, progress, settings, startSession, loadQuestionState],
   );
 
+  const beginSessionWithQuestions = useCallback(
+    (questionIds: number[]) => {
+      if (questionIds.length === 0) return;
+
+      const sessionSettings: QuizSettings = {
+        ...settings,
+        mode: "practice",
+        questionFilter: "all",
+      };
+      const newSession: ActiveSession = {
+        id: sessionId(),
+        startedAt: new Date().toISOString(),
+        questionIds,
+        settings: sessionSettings,
+        currentIndex: 0,
+        sessionAnswers: {},
+      };
+      startSession(newSession);
+      setSelected([]);
+      setRevealed(false);
+      setScreen("quiz");
+    },
+    [settings, startSession],
+  );
+
   const goToIndex = useCallback(
-    (idx: number) => {
+    (
+      idx: number,
+      answersOverride?: Record<number, { selected: string; correct: boolean }>,
+    ) => {
       if (!session) return;
       const clamped = Math.max(0, Math.min(idx, session.questionIds.length - 1));
-      const answers = commitCurrentSelection(session.sessionAnswers);
+      const baseAnswers = answersOverride ?? session.sessionAnswers;
+      const answers = commitCurrentSelection(baseAnswers);
       updateActiveSession({ currentIndex: clamped, sessionAnswers: answers });
       loadQuestionState(session.questionIds[clamped], session.settings.mode, answers);
     },
@@ -166,10 +204,13 @@ function App() {
     [questionMap],
   );
 
-  const finishSession = useCallback(async () => {
+  const finishSession = useCallback(async (
+    answersOverride?: Record<number, { selected: string; correct: boolean }>,
+  ) => {
     if (!session) return;
 
-    const answers = commitCurrentSelection(session.sessionAnswers);
+    const baseAnswers = answersOverride ?? session.sessionAnswers;
+    const answers = commitCurrentSelection(baseAnswers);
     if (answers !== session.sessionAnswers) {
       updateActiveSession({ sessionAnswers: answers });
     }
@@ -262,22 +303,21 @@ function App() {
     const isCorrect = isAnswerCorrect(current, selected);
     const selectedStr = serializeSelection(selected);
     const isExam = session.settings.mode === "exam";
+    const nextAnswers = {
+      ...session.sessionAnswers,
+      [current.id]: { selected: selectedStr, correct: isCorrect },
+    };
 
     recordAnswer(current.id, selectedStr, isCorrect);
-    updateActiveSession({
-      sessionAnswers: {
-        ...session.sessionAnswers,
-        [current.id]: { selected: selectedStr, correct: isCorrect },
-      },
-    });
 
     if (isExam) {
       if (session.currentIndex >= session.questionIds.length - 1) {
-        finishSession();
+        void finishSession(nextAnswers);
       } else {
-        goToIndex(session.currentIndex + 1);
+        goToIndex(session.currentIndex + 1, nextAnswers);
       }
     } else {
+      updateActiveSession({ sessionAnswers: nextAnswers });
       setRevealed(true);
     }
   }, [current, selected, session, recordAnswer, updateActiveSession, finishSession, goToIndex]);
@@ -310,7 +350,7 @@ function App() {
   }, []);
 
   const handleTabChange = useCallback((tab: Tab) => {
-    setScreen(tab === "stats" ? "stats" : "home");
+    setScreen(tab === "stats" ? "stats" : tab === "review" ? "review" : "home");
   }, []);
 
   useAutoAdvance(
@@ -321,7 +361,8 @@ function App() {
     session ? session.currentIndex >= session.questionIds.length - 1 : true,
   );
 
-  const activeTab: Tab = screen === "stats" ? "stats" : "practice";
+  const activeTab: Tab =
+    screen === "stats" ? "stats" : screen === "review" ? "review" : "practice";
 
   if (screen === "results" && lastResult) {
     return (
@@ -362,6 +403,19 @@ function App() {
           onPrev={handlePrev}
           onExit={handleExit}
           onJump={handleJump}
+        />
+      </AppShell>
+    );
+  }
+
+  if (screen === "review") {
+    return (
+      <AppShell showNav={true} activeTab={activeTab} onTabChange={handleTabChange}>
+        <ReviewScreen
+          sessions={history}
+          bestSessionId={userStats.bestScore?.sessionId ?? null}
+          getQuestion={getQuestion}
+          onPracticeQuestions={beginSessionWithQuestions}
         />
       </AppShell>
     );

@@ -29,7 +29,8 @@ export function recordSessionComplete(
   record: SessionRecord,
   sessionAnswers: Record<number, { selected: string; correct: boolean }>,
 ): { history: SessionRecord[]; userStats: UserStats } {
-  const history = [record, ...loadSessionHistory()].slice(0, MAX_HISTORY);
+  const fullRecord: SessionRecord = { ...record, answers: sessionAnswers };
+  const history = [fullRecord, ...loadSessionHistory()].slice(0, MAX_HISTORY);
   saveJson(storageKeys.sessions, history);
 
   const streak = computeStreak(record.questionIds, sessionAnswers);

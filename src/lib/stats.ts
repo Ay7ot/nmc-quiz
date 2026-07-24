@@ -136,6 +136,7 @@ export function normalizeSession(raw: Partial<SessionRecord> & Pick<SessionRecor
     skipped: raw.skipped,
     durationMs,
     settings: raw.settings,
+    answers: raw.answers,
   };
 
   return {

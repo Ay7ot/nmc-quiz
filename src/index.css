@@ -51,6 +51,13 @@ input {
   font-family: inherit;
 }
 
+/* 16px minimum — iOS Safari zooms focused inputs below this size */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
 input[type="number"] {
   -moz-appearance: textfield;
 }
