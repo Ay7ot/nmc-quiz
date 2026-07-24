@@ -8,6 +8,10 @@ from pathlib import Path
 
 import fitz
 
+OPTION_LINE = re.compile(r"^([a-z])\)\s*(.*)$", re.IGNORECASE)
+QUESTION_LINE = re.compile(r"^(\d+)\.\s*(.*)$")
+NEXT_QUESTION = re.compile(r"^\d+\.\s")
+
 
 def is_yellow_fill(fill):
     if not fill or len(fill) < 3:
@@ -26,84 +30,215 @@ def rects_overlap(r1, r2, threshold=0.25):
     return (inter.width * inter.height) / text_area > threshold
 
 
-def get_highlighted_letters(page):
-    """Return set of option letters (a-d) highlighted on this page."""
-    yellow_rects = [
-        p["rect"] for p in page.get_drawings() if is_yellow_fill(p.get("fill"))
-    ]
-    letters = set()
+def get_yellow_rects(page):
+    return [p["rect"] for p in page.get_drawings() if is_yellow_fill(p.get("fill"))]
+
+
+def span_highlighted(span_bbox, yellow_rects):
+    return any(rects_overlap(yr, span_bbox) for yr in yellow_rects)
+
+
+def get_page_lines(page):
+    yellow_rects = get_yellow_rects(page)
+    lines = []
+
     for block in page.get_text("dict")["blocks"]:
         if block.get("type") != 0:
             continue
         for line in block["lines"]:
-            for span in line["spans"]:
-                text = span["text"].strip()
-                bbox = fitz.Rect(span["bbox"])
-                if not re.match(r"^[a-d]\)$", text):
-                    continue
-                for yr in yellow_rects:
-                    if rects_overlap(yr, bbox):
-                        letters.add(text[0])
-                        break
-    return letters
+            text = "".join(s["text"] for s in line["spans"]).strip()
+            if not text:
+                continue
+            bbox = fitz.Rect(line["bbox"])
+            spans = []
+            for s in line["spans"]:
+                sb = fitz.Rect(s["bbox"])
+                spans.append(
+                    {
+                        "text": s["text"],
+                        "highlighted": span_highlighted(sb, yellow_rects),
+                    }
+                )
+            lines.append(
+                {
+                    "text": text,
+                    "y0": bbox.y0,
+                    "y1": bbox.y1,
+                    "highlighted": any(s["highlighted"] for s in spans),
+                    "spans": spans,
+                }
+            )
+
+    lines.sort(key=lambda row: (row["y0"], row["text"]))
+    return lines
 
 
-def parse_questions_from_text(text, page_highlights, start_id=1):
-    """Parse question blocks from page text, assign answers from highlights."""
-    text = re.sub(r"\r\n", "\n", text)
-    text = re.sub(r"[ \t]+\n", "\n", text)
+def split_question_blocks(lines):
+    blocks = []
+    current = None
 
-    parts = re.split(r"(?<=\n)(?=\d+\.\s)", text)
-    questions = []
-    q_id = start_id
-
-    for part in parts:
-        part = part.strip()
-        if not part:
-            continue
-        m = re.match(r"^(\d+)\.\s*(.*)", part, re.DOTALL)
-        if not m:
-            continue
-
-        qnum = int(m.group(1))
-        body = m.group(2).strip()
-
-        option_pattern = re.compile(r"(?:^|\n)([a-d])\)\s*", re.MULTILINE)
-        splits = list(option_pattern.finditer(body))
-        if not splits:
-            continue
-
-        question_text = body[: splits[0].start()].strip()
-        question_text = re.sub(r"\s+", " ", question_text)
-
-        options = []
-        answer = None
-        for i, match in enumerate(splits):
-            letter = match.group(1)
-            start = match.end()
-            end = splits[i + 1].start() if i + 1 < len(splits) else len(body)
-            opt_text = body[start:end].strip()
-            opt_text = re.sub(r"\s+", " ", opt_text)
-            options.append({"id": letter, "text": opt_text})
-            if letter in page_highlights:
-                answer = letter
-
-        if not question_text or not options or qnum < 1:
-            continue
-        if len(question_text) < 10:
-            continue
-
-        questions.append(
-            {
-                "id": qnum,
-                "question": question_text,
-                "options": options,
-                "answer": answer,
+    for line in lines:
+        match = QUESTION_LINE.match(line["text"])
+        if match:
+            if current:
+                blocks.append(current)
+            current = {
+                "id": int(match.group(1)),
+                "lines": [line],
             }
-        )
-        q_id = qnum + 1
+            continue
+        if current:
+            current["lines"].append(line)
 
-    return questions
+    if current:
+        blocks.append(current)
+
+    return blocks
+
+
+def parse_question_block(block):
+    lines = block["lines"]
+    first = lines[0]["text"]
+    first_match = QUESTION_LINE.match(first)
+    if not first_match:
+        return None
+
+    question_parts = []
+    if first_match.group(2).strip():
+        question_parts.append(first_match.group(2).strip())
+
+    body_lines = lines[1:]
+    options = []
+    current_opt = None
+    options_started = False
+    pending_text = None
+    idx = 0
+
+    while idx < len(body_lines):
+        line = body_lines[idx]
+        text = line["text"]
+        if NEXT_QUESTION.match(text):
+            break
+
+        opt_match = OPTION_LINE.match(text)
+        if opt_match:
+            options_started = True
+            if current_opt:
+                options.append(current_opt)
+            letter = opt_match.group(1).lower()
+            rest = opt_match.group(2).strip()
+            if pending_text:
+                rest = f"{pending_text} {rest}".strip()
+                pending_text = None
+            current_opt = {
+                "id": letter,
+                "text": rest,
+                "lines": [line],
+            }
+            idx += 1
+
+            if not rest:
+                while idx < len(body_lines):
+                    nxt = body_lines[idx]["text"]
+                    if NEXT_QUESTION.match(nxt) or OPTION_LINE.match(nxt):
+                        break
+                    current_opt["text"] = f"{current_opt['text']} {nxt}".strip()
+                    current_opt["lines"].append(body_lines[idx])
+                    idx += 1
+            continue
+
+        if not options_started:
+            question_parts.append(text)
+            idx += 1
+            continue
+
+        if current_opt is not None:
+            if idx + 1 < len(body_lines):
+                nxt_match = OPTION_LINE.match(body_lines[idx + 1]["text"])
+                if nxt_match and not nxt_match.group(2).strip():
+                    pending_text = text
+                    options.append(current_opt)
+                    current_opt = None
+                    idx += 1
+                    continue
+            current_opt["text"] = f"{current_opt['text']} {text}".strip()
+            current_opt["lines"].append(line)
+
+        idx += 1
+
+    if current_opt:
+        options.append(current_opt)
+
+    question_text = re.sub(r"\s+", " ", " ".join(question_parts)).strip()
+    for opt in options:
+        opt["text"] = re.sub(r"\s+", " ", opt["text"]).strip()
+
+    if not question_text or not options:
+        return None
+    if len(question_text) < 10:
+        return None
+
+    answers = detect_highlighted_answers(options)
+    answers = refine_extended_answers(options, answers)
+
+    clean_options = [{"id": o["id"], "text": o["text"]} for o in options]
+
+    return {
+        "id": block["id"],
+        "question": question_text,
+        "options": clean_options,
+        "answers": answers,
+        "answer": answers[0] if len(answers) == 1 else None,
+    }
+
+
+def option_is_highlighted(opt) -> bool:
+    for line in opt["lines"]:
+        content_highlighted = False
+        marker_highlighted = False
+        for span in line["spans"]:
+            token = span["text"].strip()
+            if re.match(r"^[a-z]\)$", token, re.IGNORECASE):
+                if span["highlighted"]:
+                    marker_highlighted = True
+            elif token and span["highlighted"]:
+                content_highlighted = True
+        if marker_highlighted or content_highlighted:
+            return True
+    return False
+
+
+def detect_highlighted_answers(options):
+    answers = []
+    for opt in options:
+        if option_is_highlighted(opt):
+            answers.append(opt["id"])
+    return answers
+
+
+def refine_extended_answers(options, answers):
+    option_ids = [o["id"] for o in options]
+    max_letter = max(option_ids)
+
+    # Standard 4-option questions — trust highlights as-is
+    if max_letter <= "d":
+        return answers
+
+    # Extended lists (e.g. a–g multi-select): keep d+ only, fill gaps
+    d_plus = [letter for letter in answers if letter >= "d" and letter in option_ids]
+    if not d_plus:
+        return answers
+
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    min_i = min(alphabet.index(letter) for letter in d_plus)
+    max_i = max(alphabet.index(letter) for letter in d_plus)
+    filled = set(d_plus)
+    for i in range(min_i, max_i + 1):
+        letter = alphabet[i]
+        if letter in option_ids and letter >= "d":
+            filled.add(letter)
+
+    return sorted(filled, key=lambda letter: option_ids.index(letter))
 
 
 def parse_pdf(pdf_path: str) -> list[dict]:
@@ -112,17 +247,17 @@ def parse_pdf(pdf_path: str) -> list[dict]:
 
     for page_num in range(len(doc)):
         page = doc[page_num]
-        text = page.get_text("text") or ""
-        if not re.search(r"\d+\.\s", text):
+        lines = get_page_lines(page)
+        if not lines:
             continue
 
-        highlights = get_highlighted_letters(page)
-        page_questions = parse_questions_from_text(text, highlights)
-        all_questions.extend(page_questions)
+        for block in split_question_blocks(lines):
+            parsed = parse_question_block(block)
+            if parsed:
+                all_questions.append(parsed)
 
     doc.close()
 
-    # Deduplicate by id (some questions may appear twice in PDF)
     seen = {}
     for q in all_questions:
         seen[q["id"]] = q
@@ -141,14 +276,16 @@ def main():
     print(f"Parsing {pdf_path}...")
     questions = parse_pdf(pdf_path)
 
-    with_answer = sum(1 for q in questions if q["answer"])
-    without_answer = [q["id"] for q in questions if not q["answer"]]
+    with_answers = sum(1 for q in questions if q.get("answers"))
+    multi = sum(1 for q in questions if len(q.get("answers", [])) > 1)
+    without_answer = [q["id"] for q in questions if not q.get("answers")]
 
     output = {
         "meta": {
             "title": "NMC CBT Practice Questions",
             "total": len(questions),
-            "withAnswers": with_answer,
+            "withAnswers": with_answers,
+            "multiSelect": multi,
         },
         "questions": questions,
     }
@@ -157,7 +294,7 @@ def main():
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
-    print(f"Extracted {len(questions)} questions ({with_answer} with answers)")
+    print(f"Extracted {len(questions)} questions ({with_answers} with answers, {multi} multi-select)")
     if without_answer:
         print(f"Missing answers for {len(without_answer)} questions: {without_answer[:20]}...")
     print(f"Saved to {out_path}")

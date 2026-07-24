@@ -13,6 +13,14 @@ import { useProgress } from "./hooks/useProgress";
 import { useSessions } from "./hooks/useSessions";
 import { useSettings } from "./hooks/useSettings";
 import { buildSessionOrder, filterQuestions, sessionId } from "./lib/quizEngine";
+import {
+  hasKnownAnswer,
+  isAnswerCorrect,
+  isMultiSelect,
+  isPlayableQuestion,
+  parseSelection,
+  serializeSelection,
+} from "./lib/questionUtils";
 import type {
   ActiveSession,
   Question,
@@ -23,9 +31,7 @@ import type {
 import { sessionScorePercent } from "./types";
 import "./App.css";
 
-const ALL_QUESTIONS = (questionBank.questions as Question[]).filter(
-  (q) => q.id >= 1 && q.options.length >= 2,
-);
+const ALL_QUESTIONS = (questionBank.questions as Question[]).filter(isPlayableQuestion);
 
 function App() {
   const { settings, updateSettings } = useSettings();
@@ -48,7 +54,7 @@ function App() {
   const [lastReviewItems, setLastReviewItems] = useState<ReviewItem[]>([]);
   const [isNewHighScore, setIsNewHighScore] = useState(false);
   const [previousSessionScore, setPreviousSessionScore] = useState<number | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
   const [revealed, setRevealed] = useState(false);
 
   const questionMap = useMemo(
@@ -73,7 +79,7 @@ function App() {
   const loadQuestionState = useCallback(
     (qid: number, sessionMode = session?.settings.mode ?? "practice") => {
       const ans = session?.sessionAnswers[qid];
-      setSelected(ans?.selected ?? null);
+      setSelected(parseSelection(ans?.selected));
       setRevealed(sessionMode === "practice" && ans != null);
     },
     [session?.sessionAnswers, session?.settings.mode],
@@ -99,7 +105,7 @@ function App() {
         sessionAnswers: {},
       };
       startSession(newSession);
-      setSelected(null);
+      setSelected([]);
       setRevealed(false);
       setScreen("quiz");
     },
@@ -191,16 +197,30 @@ function App() {
     setScreen("results");
   }, [session, completeSession, userStats, buildReviewItems]);
 
+  const handleSelect = useCallback(
+    (id: string) => {
+      if (!current) return;
+      setSelected((prev) => {
+        if (isMultiSelect(current)) {
+          return prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+        }
+        return prev.includes(id) ? [] : [id];
+      });
+    },
+    [current],
+  );
+
   const handleCheck = useCallback(() => {
-    if (!current || !selected || !session || !current.answer) return;
-    const isCorrect = selected === current.answer;
+    if (!current || selected.length === 0 || !session || !hasKnownAnswer(current)) return;
+    const isCorrect = isAnswerCorrect(current, selected);
+    const selectedStr = serializeSelection(selected);
     const isExam = session.settings.mode === "exam";
 
-    recordAnswer(current.id, selected, isCorrect);
+    recordAnswer(current.id, selectedStr, isCorrect);
     updateActiveSession({
       sessionAnswers: {
         ...session.sessionAnswers,
-        [current.id]: { selected, correct: isCorrect },
+        [current.id]: { selected: selectedStr, correct: isCorrect },
       },
     });
 
@@ -289,7 +309,7 @@ function App() {
           shuffleOptions={session.settings.shuffleOptions}
           selected={selected}
           revealed={revealed}
-          onSelect={setSelected}
+          onSelect={handleSelect}
           onCheck={handleCheck}
           onNext={handleNext}
           onPrev={handlePrev}

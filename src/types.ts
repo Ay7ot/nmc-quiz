@@ -7,7 +7,10 @@ export interface Question {
   id: number;
   question: string;
   options: Option[];
+  /** Single correct option (legacy / standard MCQ) */
   answer: string | null;
+  /** Multiple correct options (select-all-that-apply) */
+  answers?: string[];
 }
 
 export interface QuestionBank {

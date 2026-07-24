@@ -788,6 +788,16 @@
 
 .q-meta {
   margin-bottom: 0.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.q-badge-multi {
+  background: var(--gold-soft);
+  color: #92400e;
+  border: 1px solid rgba(184, 134, 11, 0.25);
 }
 
 .q-badge {
@@ -1208,6 +1218,15 @@
 .review-answer-row.correct-answer {
   background: var(--green-soft);
   border: 1px solid rgba(22, 101, 52, 0.15);
+}
+
+.review-answer-chip {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.review-answer-chip:first-child {
+  margin-top: 0;
 }
 
 .review-empty {

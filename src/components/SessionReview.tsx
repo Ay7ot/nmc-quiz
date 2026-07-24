@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Check, ClipboardList, X } from "lucide-react";
 import { Icon } from "./Icon";
+import {
+  formatAnswerLabels,
+  getCorrectAnswers,
+  parseSelection,
+} from "../lib/questionUtils";
 import type { Question } from "../types";
 
 export interface ReviewItem {
@@ -79,13 +84,12 @@ function ReviewCard({ item }: { item: ReviewItem }) {
   const isSkipped = selected == null;
   const isWrong = selected != null && correct === false;
   const isRight = selected != null && correct === true;
+  const selectedIds = parseSelection(selected);
+  const correctIds = getCorrectAnswers(question);
 
   let status = "skipped";
   if (isRight) status = "right";
   if (isWrong) status = "wrong";
-
-  const selectedOpt = question.options.find((o) => o.id === selected);
-  const correctOpt = question.options.find((o) => o.id === question.answer);
 
   return (
     <li className={`review-card ${status}`}>
@@ -108,20 +112,31 @@ function ReviewCard({ item }: { item: ReviewItem }) {
 
       <p className="review-question type-body-lg">{question.question}</p>
 
-      {!isSkipped && selectedOpt && (
+      {!isSkipped && selectedIds.length > 0 && (
         <div className={`review-answer-row ${isWrong ? "your-wrong" : "your-right"}`}>
           <span className="type-label-sm">Your answer</span>
           <span>
-            <strong>{selected?.toUpperCase()})</strong> {selectedOpt.text}
+            {selectedIds.map((id) => {
+              const opt = question.options.find((o) => o.id === id);
+              return (
+                <span key={id} className="review-answer-chip">
+                  <strong>{id.toUpperCase()})</strong> {opt?.text ?? id}
+                </span>
+              );
+            })}
           </span>
         </div>
       )}
 
-      {(isWrong || isSkipped) && question.answer && correctOpt && (
+      {(isWrong || isSkipped) && correctIds.length > 0 && (
         <div className="review-answer-row correct-answer">
           <span className="type-label-sm">Correct answer</span>
           <span>
-            <strong>{question.answer.toUpperCase()})</strong> {correctOpt.text}
+            <strong>{formatAnswerLabels(question)}</strong>
+            {" — "}
+            {correctIds
+              .map((id) => question.options.find((o) => o.id === id)?.text ?? id)
+              .join(" · ")}
           </span>
         </div>
       )}

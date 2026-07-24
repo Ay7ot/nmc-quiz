@@ -10,6 +10,13 @@ import {
   X,
 } from "lucide-react";
 import { shuffleArray } from "../lib/quizEngine";
+import {
+  formatAnswerLabels,
+  getCorrectAnswers,
+  hasKnownAnswer,
+  isAnswerCorrect,
+  isMultiSelect,
+} from "../lib/questionUtils";
 import type { Question, QuizMode } from "../types";
 import { Icon } from "./Icon";
 
@@ -21,7 +28,7 @@ interface QuizScreenProps {
   sessionCorrect: number;
   sessionAnswered: number;
   shuffleOptions: boolean;
-  selected: string | null;
+  selected: string[];
   revealed: boolean;
   onSelect: (id: string) => void;
   onCheck: () => void;
@@ -50,6 +57,8 @@ export function QuizScreen({
 }: QuizScreenProps) {
   const [jumpValue, setJumpValue] = useState("");
   const isExam = mode === "exam";
+  const multiSelect = isMultiSelect(question);
+  const correctAnswers = getCorrectAnswers(question);
 
   const options = useMemo(() => {
     const opts = [...question.options];
@@ -60,10 +69,11 @@ export function QuizScreen({
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [question.id]);
 
-  const isCorrect = !isExam && revealed && selected === question.answer;
+  const isCorrect = !isExam && revealed && isAnswerCorrect(question, selected);
   const isLast = index >= total - 1;
   const progressPct = ((index + 1) / total) * 100;
   const showFeedback = !isExam && revealed;
+  const canCheck = selected.length > 0 && hasKnownAnswer(question);
 
   return (
     <div className={`screen quiz-screen ${isExam ? "exam-mode" : "practice-mode"}`}>
@@ -108,24 +118,32 @@ export function QuizScreen({
       <main className="quiz-main">
         <div className="q-meta">
           <span className="q-badge type-label-sm">Question {question.id}</span>
+          {multiSelect && (
+            <span className="q-badge q-badge-multi type-label-sm">Select all that apply</span>
+          )}
         </div>
 
         <h2 className="q-text type-headline-sm">{question.question}</h2>
 
-        <div className="q-options" role="radiogroup" aria-label="Answer options">
+        <div
+          className="q-options"
+          role={multiSelect ? "group" : "radiogroup"}
+          aria-label="Answer options"
+        >
           {options.map((opt, i) => {
+            const isPicked = selected.includes(opt.id);
+            const isRightAnswer = correctAnswers.includes(opt.id);
             let state = "";
-            if (selected === opt.id) state = "picked";
-            if (showFeedback && opt.id === question.answer) state = "right";
-            if (showFeedback && selected === opt.id && opt.id !== question.answer)
-              state = "wrong";
+            if (isPicked) state = "picked";
+            if (showFeedback && isRightAnswer) state = "right";
+            if (showFeedback && isPicked && !isRightAnswer) state = "wrong";
 
             return (
               <button
                 key={opt.id}
                 type="button"
-                role="radio"
-                aria-checked={selected === opt.id}
+                role={multiSelect ? "checkbox" : "radio"}
+                aria-checked={isPicked}
                 className={`q-opt ${state}`}
                 onClick={() => onSelect(opt.id)}
                 style={{ animationDelay: `${i * 40}ms` }}
@@ -133,7 +151,7 @@ export function QuizScreen({
                 <span className="q-opt-marker">{opt.id.toUpperCase()}</span>
                 <span className="q-opt-body type-body-lg">{opt.text}</span>
                 <span className="q-opt-ring" aria-hidden />
-                {showFeedback && opt.id === question.answer && (
+                {showFeedback && isRightAnswer && (
                   <Icon icon={Check} size="sm" className="q-opt-check" />
                 )}
               </button>
@@ -141,7 +159,7 @@ export function QuizScreen({
           })}
         </div>
 
-        {!question.answer && (
+        {!hasKnownAnswer(question) && (
           <p className="q-note type-body-md">No answer marked in the PDF for this one.</p>
         )}
 
@@ -155,9 +173,14 @@ export function QuizScreen({
                 <strong>Correct — well done.</strong>
               ) : (
                 <>
-                  <strong>Answer {question.answer?.toUpperCase()}</strong>
+                  <strong>Answer: {formatAnswerLabels(question)}</strong>
                   <span>
-                    {question.options.find((o) => o.id === question.answer)?.text}
+                    {correctAnswers
+                      .map((id) => {
+                        const opt = question.options.find((o) => o.id === id);
+                        return opt ? `${id.toUpperCase()}) ${opt.text}` : id.toUpperCase();
+                      })
+                      .join(" · ")}
                   </span>
                 </>
               )}
@@ -205,7 +228,7 @@ export function QuizScreen({
               type="button"
               className="bar-btn bar-btn-main"
               onClick={onCheck}
-              disabled={!selected || !question.answer}
+              disabled={!canCheck}
             >
               <Icon icon={isLast ? Send : Check} size="sm" />
               {isLast ? "Submit test" : "Save & next"}
@@ -222,7 +245,7 @@ export function QuizScreen({
               type="button"
               className="bar-btn bar-btn-main"
               onClick={onCheck}
-              disabled={!selected || !question.answer}
+              disabled={!canCheck}
             >
               <Icon icon={Check} size="sm" />
               Check
