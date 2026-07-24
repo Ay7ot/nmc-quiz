@@ -1,5 +1,16 @@
 import type { Question } from "../types";
 
+/** PDF formula working lines that leaked into question/option text. */
+const FORMULA_PATTERN =
+  /\)\s*%\s*<|I##|ℎ"|\/#\$|#\$\-|[\]\\^_=`]|!\s*["']|^\s*[iI]\)\s|\d+\s*\)\s*%\s*</;
+
+export function isFormulaArtifact(text: string): boolean {
+  if (FORMULA_PATTERN.test(text)) return true;
+  const words = text.match(/[a-zA-Z]{4,}/g) ?? [];
+  const symbols = (text.match(/[^a-zA-Z0-9\s.,?!;'"/\-()%]/g) ?? []).length;
+  return words.length <= 1 && symbols >= 3;
+}
+
 /** All correct option ids for a question (supports legacy single `answer`). */
 export function getCorrectAnswers(question: Question): string[] {
   if (question.answers?.length) return [...question.answers];
@@ -42,8 +53,11 @@ export function formatAnswerLabels(question: Question): string {
 }
 
 export function isPlayableQuestion(question: Question): boolean {
+  if (question.id < 1) return false;
   if (question.options.length < 2) return false;
   if (question.options.some((opt) => !opt.text.trim())) return false;
   if (!hasKnownAnswer(question)) return false;
+  if (isFormulaArtifact(question.question)) return false;
+  if (question.options.some((opt) => isFormulaArtifact(opt.text))) return false;
   return !question.options.some((opt) => /\b[e-z]\)\s/i.test(opt.text));
 }

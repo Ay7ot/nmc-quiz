@@ -1,110 +1,32 @@
 {
   "meta": {
     "title": "NMC CBT Practice Questions",
-    "total": 1241,
-    "withAnswers": 1198,
+    "total": 1226,
+    "withAnswers": 1183,
     "multiSelect": 22
   },
   "questions": [
     {
-      "id": 0,
-      "question": "2 )I < 1 )% = 0.2 )% 1 )I",
+      "id": 2,
+      "question": "What is the purpose of The NMC Code?",
       "options": [
         {
           "id": "a",
-          "text": "20 ml"
+          "text": "It outlines specific tasks or clinical procedures"
         },
         {
           "id": "b",
-          "text": "2 ml"
+          "text": "It ascertains in detail a nurse's or midwife's clinical expertise"
         },
         {
           "id": "c",
-          "text": "0.2 ml"
+          "text": "It is a tool for educating prospective nurses and midwives"
         }
       ],
       "answers": [
         "c"
       ],
       "answer": "c"
-    },
-    {
-      "id": 1,
-      "question": "5 )% < 2 = 3 )%",
-      "options": [
-        {
-          "id": "a",
-          "text": "1.5 ml"
-        },
-        {
-          "id": "b",
-          "text": "2ml"
-        },
-        {
-          "id": "c",
-          "text": "2.5 ml"
-        },
-        {
-          "id": "d",
-          "text": "3ml"
-        }
-      ],
-      "answers": [
-        "d"
-      ],
-      "answer": "d"
-    },
-    {
-      "id": 2,
-      "question": "75 ℎ\"(4/ < 60 I##/)% 250 )% 60 ),-/ℎ4 = 15,000 )% = 90.90 I##/),- 165 ℎ4",
-      "options": [
-        {
-          "id": "a",
-          "text": "91 gtt/min"
-        },
-        {
-          "id": "b",
-          "text": "96 gtt/min"
-        },
-        {
-          "id": "c",
-          "text": "125 gtt/min"
-        },
-        {
-          "id": "d",
-          "text": "142 gtt/min"
-        }
-      ],
-      "answers": [
-        "a"
-      ],
-      "answer": "a"
-    },
-    {
-      "id": 3,
-      "question": "All are purposes of NMC except:",
-      "options": [
-        {
-          "id": "a",
-          "text": "NMC’s role is to regulate nurses and midwives in England, Wales, Scotland and Northern Ireland."
-        },
-        {
-          "id": "b",
-          "text": "It sets standards of education, training, conduct and performance so that nurses and midwives can deliver high quality healthcare throughout their careers."
-        },
-        {
-          "id": "c",
-          "text": "It makes sure that nurses and midwives keep their skills and knowledge up to date and uphold its professional standards."
-        },
-        {
-          "id": "d",
-          "text": "It is responsible for regulating hospitals or other healthcare settings."
-        }
-      ],
-      "answers": [
-        "d"
-      ],
-      "answer": "d"
     },
     {
       "id": 4,
@@ -203,32 +125,6 @@
       "answer": "a"
     },
     {
-      "id": 9,
-      "question": "6 ℎ\"(4/ < 12 I##/)% = 25 I##/),- 576 ℎ4",
-      "options": [
-        {
-          "id": "a",
-          "text": "2 gtt/min"
-        },
-        {
-          "id": "b",
-          "text": "12 gtt/min"
-        },
-        {
-          "id": "c",
-          "text": "25 gtt/min"
-        },
-        {
-          "id": "d",
-          "text": "27 gtt/min"
-        }
-      ],
-      "answers": [
-        "c"
-      ],
-      "answer": "c"
-    },
-    {
       "id": 10,
       "question": "According to NMC Standards code and conduct, a registered nurse is EXCLUDED from legal action in which one of these?",
       "options": [
@@ -256,7 +152,7 @@
     },
     {
       "id": 11,
-      "question": "5 oz of grape juice, ¾ qt of milk, 320 mL of diet coke, 1 ¼ L of D5W IV and 2 oz of grits. What will you recored as the total intake in mL for this patient? 1 oz = 30 ml 1 qt = 1,000 ml 600ml (coffee) + 345ml (grape juice) + 750ml (milk) + 320ml (diet coke) + 1,250ml (D5W) = 3,265 ml (Grits is not liquid at room temperature, so it is not included when calculating intake )",
+      "question": "5 oz of grape juice, ¾ qt of milk, 320 mL of diet coke, 1 ¼ L of D5W IV and 2 oz of grits. What will you recored as the total intake in mL for this patient? 600ml (coffee) + 345ml (grape juice) + 750ml (milk) + 320ml (diet coke) + (Grits is not liquid at room temperature, so it is not included when calculating intake )",
       "options": [
         {
           "id": "a",
@@ -282,29 +178,29 @@
     },
     {
       "id": 12,
-      "question": "5 )I = 2 `a]bc /#4*-I#ℎ $'$,%$+%*",
+      "question": "Among the following values incorporated in NMC’s 6 C’s, which is not included?",
       "options": [
         {
           "id": "a",
-          "text": "2 caps"
+          "text": "Care"
         },
         {
           "id": "b",
-          "text": "2.5 caps"
+          "text": "Courage"
         },
         {
           "id": "c",
-          "text": "3 caps"
+          "text": "Confidentiality"
         },
         {
           "id": "d",
-          "text": "1.5 caps"
+          "text": "Communication"
         }
       ],
       "answers": [
-        "a"
+        "c"
       ],
-      "answer": "a"
+      "answer": "c"
     },
     {
       "id": 13,
@@ -1449,36 +1345,6 @@
       "answer": "c"
     },
     {
-      "id": 60,
-      "question": "Independent Advocacy is:",
-      "options": [
-        {
-          "id": "a",
-          "text": "Providing general advice"
-        },
-        {
-          "id": "b",
-          "text": "Making decisions for someone"
-        },
-        {
-          "id": "c",
-          "text": "Care and support work"
-        },
-        {
-          "id": "d",
-          "text": "Agreeing with everything a person says and doing anything a person asks you to do"
-        },
-        {
-          "id": "e",
-          "text": "None of the above"
-        }
-      ],
-      "answers": [
-        "e"
-      ],
-      "answer": "e"
-    },
-    {
       "id": 61,
       "question": "What is meant by an advocate?",
       "options": [
@@ -1681,32 +1547,6 @@
         "d"
       ],
       "answer": "d"
-    },
-    {
-      "id": 69,
-      "question": "What is accountability?",
-      "options": [
-        {
-          "id": "a",
-          "text": "Ethical and moral obligations permeating the nursing profession"
-        },
-        {
-          "id": "b",
-          "text": "To be answerable to oneself and others for one's own actions.”"
-        },
-        {
-          "id": "c",
-          "text": "A systematic approach to maintaining and improving the quality of patient care within a health system (NHS)."
-        },
-        {
-          "id": "d",
-          "text": "The process of applying knowledge and expertise to a clinical situation to develop a solution"
-        }
-      ],
-      "answers": [
-        "b"
-      ],
-      "answer": "b"
     },
     {
       "id": 70,
@@ -3343,7 +3183,7 @@
     },
     {
       "id": 138,
-      "question": "You are to take charge of the next shift of nurses. Few minutes before your shift, the in charge of the current shift informed you that two of your nurses will be absent. Since there is a shortage of staff in your shift, what will you do?",
+      "question": "You are to take charge of the next shift of nurses. Few minutes before your shift, the in charge of the current shift informed you that two of your nurses will be absent. Since there is a shortage of staff in your shift, what will you",
       "options": [
         {
           "id": "a",
@@ -6811,32 +6651,6 @@
       "answer": "a"
     },
     {
-      "id": 281,
-      "question": "Why constipation occurs in old age?",
-      "options": [
-        {
-          "id": "a",
-          "text": "Anorexia and weight loss"
-        },
-        {
-          "id": "b",
-          "text": "Decreased muscle tone and periatalsis"
-        },
-        {
-          "id": "c",
-          "text": "Increased mobility"
-        },
-        {
-          "id": "d",
-          "text": "Increased absorption in colon"
-        }
-      ],
-      "answers": [
-        "b"
-      ],
-      "answer": "b"
-    },
-    {
       "id": 282,
       "question": "You are looking after an emaciated 80-year old man who has been admitted to your ward with acute exacerbation of chronic obstructive airways disease (COPD). He is currently so short of breath that it is difficult for him to mobilize. What are some of the actions you take to prevent him developing a pressure ulcer?",
       "options": [
@@ -7442,7 +7256,7 @@
     },
     {
       "id": 307,
-      "question": "In going up the stairs with crutches, the nurse should instruct the patient to:",
+      "question": "In going up the stairs with crutches, the nurse should instruct the patient",
       "options": [
         {
           "id": "a",
@@ -7625,32 +7439,6 @@
       ],
       "answers": [],
       "answer": null
-    },
-    {
-      "id": 315,
-      "question": "What is abduction?",
-      "options": [
-        {
-          "id": "a",
-          "text": "Division of the body into front and back"
-        },
-        {
-          "id": "b",
-          "text": "Movement of a body parts towards the body’s midline"
-        },
-        {
-          "id": "c",
-          "text": "Division of the body into left and right"
-        },
-        {
-          "id": "d",
-          "text": "Movement of body part away from the body’s midline"
-        }
-      ],
-      "answers": [
-        "d"
-      ],
-      "answer": "d"
     },
     {
       "id": 316,
@@ -9616,58 +9404,6 @@
       "answer": "d"
     },
     {
-      "id": 396,
-      "question": "Sign of dehydration",
-      "options": [
-        {
-          "id": "a",
-          "text": "Bounding pulse"
-        },
-        {
-          "id": "b",
-          "text": "Hypertension"
-        },
-        {
-          "id": "c",
-          "text": "Jugular distension"
-        },
-        {
-          "id": "d",
-          "text": "Hypotension"
-        }
-      ],
-      "answers": [
-        "d"
-      ],
-      "answer": "d"
-    },
-    {
-      "id": 397,
-      "question": "What is respiration?",
-      "options": [
-        {
-          "id": "a",
-          "text": "the movement of air into and out of the lungs to continually refresh the gases there, commonly called ‘breathing’"
-        },
-        {
-          "id": "b",
-          "text": "movement of oxygen from the lungs into the blood, and carbon dioxide from the lungs into the blood, commonly called ‘gaseous exchange’"
-        },
-        {
-          "id": "c",
-          "text": "movement of oxygen from blood to the cells, and of carbon dioxide from the cells to the blood"
-        },
-        {
-          "id": "d",
-          "text": "the transport of oxygen from the outside air to the cells within tissues, and the transport of carbon dioxide in the opposite direction."
-        }
-      ],
-      "answers": [
-        "d"
-      ],
-      "answer": "d"
-    },
-    {
       "id": 398,
       "question": "In normal breathing, what is the main muscle(s) involved in inspiration?",
       "options": [
@@ -10516,7 +10252,7 @@
     },
     {
       "id": 432,
-      "question": "A patient is assessed as lacking capacity to give consent if they are unable to:",
+      "question": "A patient is assessed as lacking capacity to give consent if they are unable",
       "options": [
         {
           "id": "a",
@@ -11514,7 +11250,7 @@
     },
     {
       "id": 473,
-      "question": "A new mother is admitted to the acute psychiatric unit with severe postpartum depression. She is tearful and states, \"I don't know why this happened to me I was so excited for my baby to come, but now I don't know!\" Which of the following responses by the nurse is MOST therapeutic?",
+      "question": "A new mother is admitted to the acute psychiatric unit with severe postpartum depression. She is tearful and states, \"I don't know why this happened to me I was so excited for my baby to come, but now I don't therapeutic?",
       "options": [
         {
           "id": "a",
@@ -13998,32 +13734,6 @@
       "answer": "b"
     },
     {
-      "id": 579,
-      "question": "All but one are signs of anaphylaxis:",
-      "options": [
-        {
-          "id": "a",
-          "text": "itchy skin or a raised, red skin rash"
-        },
-        {
-          "id": "b",
-          "text": "swollen eyes, lips, hands and feet"
-        },
-        {
-          "id": "c",
-          "text": "hypertension and tachycardia"
-        },
-        {
-          "id": "d",
-          "text": "abdominal pain, nausea and vomiting"
-        }
-      ],
-      "answers": [
-        "c"
-      ],
-      "answer": "c"
-    },
-    {
       "id": 580,
       "question": "Which of the following are signs of anaphylaxis?",
       "options": [
@@ -16228,28 +15938,6 @@
       "answer": "a"
     },
     {
-      "id": 672,
-      "question": "Patient has next dose of Digoxin but has a CR=58",
-      "options": [
-        {
-          "id": "a",
-          "text": "Omit dose, record why, and inform the doctor"
-        },
-        {
-          "id": "b",
-          "text": "Give dose and tell the doctor"
-        },
-        {
-          "id": "c",
-          "text": "Give dose as prescribed"
-        }
-      ],
-      "answers": [
-        "a"
-      ],
-      "answer": "a"
-    },
-    {
       "id": 673,
       "question": "Which drug to be avoided by a patient on digoxin?",
       "options": [
@@ -16705,7 +16393,7 @@
     },
     {
       "id": 695,
-      "question": "Manu is in persistent pain and has Oromorph PRN. All your carers are on their rounds, and you are about to administer this drug. What would you do?",
+      "question": "Manu is in persistent pain and has Oromorph PRN. All your carers are on their rounds, and you are about to administer this drug. What would you",
       "options": [
         {
           "id": "a",
@@ -18202,32 +17890,6 @@
       "answer": null
     },
     {
-      "id": 761,
-      "question": "Pharmocokinetics can be described as:",
-      "options": [
-        {
-          "id": "a",
-          "text": "The study of the effects of drugs on the function of living systems"
-        },
-        {
-          "id": "b",
-          "text": "The absorption, distribution, metabolism and excretion of drugs within ghe body: what the body does to drug"
-        },
-        {
-          "id": "c",
-          "text": "The studyof mechanism of the action of drugs and other biochemical physiological effects: ‘what the drug does to the body’"
-        },
-        {
-          "id": "d",
-          "text": "All of the above"
-        }
-      ],
-      "answers": [
-        "b"
-      ],
-      "answer": "b"
-    },
-    {
       "id": 762,
       "question": "The medicine and Healthcare Products Regulatory Agency (MHRA) is responsible for what?",
       "options": [
@@ -18685,7 +18347,7 @@
     },
     {
       "id": 781,
-      "question": "On a psychiatric unit, the preferred milieu environment is BEST describe as:",
+      "question": "On a psychiatric unit, the preferred milieu environment is BEST describe",
       "options": [
         {
           "id": "a",
@@ -18711,7 +18373,7 @@
     },
     {
       "id": 782,
-      "question": "A 17-year old patient who was involved in an orthopaedic accident is observed not eating the meals that she previously ordered and refuses to take a bath even if she is already in recovery stage. As a nurse what do you think is the best explanation for her reaction to the accident that happened to her?",
+      "question": "A 17-year old patient who was involved in an orthopaedic accident is observed not eating the meals that she previously ordered and refuses to take a bath even if she is already in recovery stage. As a nurse what do you think is the best explanation for her reaction to the accident that happened",
       "options": [
         {
           "id": "a",
@@ -19019,7 +18681,7 @@
     },
     {
       "id": 795,
-      "question": "Glasgow Coma score (GCS) is made up of 3 component parts and these are:",
+      "question": "Glasgow Coma score (GCS) is made up of 3 component parts and these",
       "options": [
         {
           "id": "a",
@@ -20665,32 +20327,6 @@
       "answer": "b"
     },
     {
-      "id": 863,
-      "question": "CVP line measures?",
-      "options": [
-        {
-          "id": "a",
-          "text": "Pressure in right atrium"
-        },
-        {
-          "id": "b",
-          "text": "Pulmonary arteries"
-        },
-        {
-          "id": "c",
-          "text": "Left ventricle"
-        },
-        {
-          "id": "d",
-          "text": "Vena cava"
-        }
-      ],
-      "answers": [
-        "a"
-      ],
-      "answer": "a"
-    },
-    {
       "id": 864,
       "question": "Mrs Smith has been assessed to have a cardiac arrest after anaphylactic reaction to a medication. Cardiopulmonary Resuscitation (CPR) was started immediately. According to the Resuscitation Council UK, which of the following statements is true?",
       "options": [
@@ -21431,7 +21067,7 @@
     },
     {
       "id": 895,
-      "question": "Patients with gastrointestinal bleeding may experience acute or chronic blood loss. Your patient is experiencing hematochezia. You recognise this by:",
+      "question": "Patients with gastrointestinal bleeding may experience acute or chronic blood loss. Your patient is experiencing hematochezia. You recognise this",
       "options": [
         {
           "id": "a",
@@ -23299,7 +22935,7 @@
     },
     {
       "id": 970,
-      "question": "A client with leukemia is receiving Trimetrexate. After reviewing the client’s chart, the physician orders Wellcovorin (leucovorin calcium). The rationale for administering leucovorin calcium to a client receiving Trimetrexate is to:",
+      "question": "A client with leukemia is receiving Trimetrexate. After reviewing the client’s chart, the physician orders Wellcovorin (leucovorin calcium). The rationale for administering leucovorin calcium to a client receiving Trimetrexate is",
       "options": [
         {
           "id": "a",
@@ -24390,32 +24026,6 @@
         "c"
       ],
       "answer": "c"
-    },
-    {
-      "id": 1014,
-      "question": "MRSA means",
-      "options": [
-        {
-          "id": "a",
-          "text": "Methilinase – Resistant Streptococcus Aureus"
-        },
-        {
-          "id": "b",
-          "text": "Methicillin-Resistant Streptococcus Aureus"
-        },
-        {
-          "id": "c",
-          "text": "Methilinase – Resistant Staphylococcus Aureus"
-        },
-        {
-          "id": "d",
-          "text": "Methicillin-Resistant Staphylococcus Aureus"
-        }
-      ],
-      "answers": [
-        "d"
-      ],
-      "answer": "d"
     },
     {
       "id": 1015,
@@ -26625,7 +26235,7 @@
     },
     {
       "id": 1108,
-      "question": "You are currently working in a nursing home. One of the service users is struggling to swallow or chew his food. To whom do you make a referral to?",
+      "question": "You are currently working in a nursing home. One of the service users is struggling to swallow or chew his food. To whom do you make a referral",
       "options": [
         {
           "id": "a",
@@ -30005,7 +29615,7 @@
     },
     {
       "id": 1245,
-      "question": "Communication is not the message that was intended but rather the message that was received. The statement that best helps explain this is",
+      "question": "Communication is not the message that was intended but rather the message that was received. The statement that best helps explain this",
       "options": [
         {
           "id": "a",
@@ -30031,7 +29641,7 @@
     },
     {
       "id": 1246,
-      "question": "A nurse has been told that a client's communications are tangential. The nurse would expect that the clients verbal responses to questions would be:",
+      "question": "A nurse has been told that a client's communications are tangential. The nurse would expect that the clients verbal responses to questions would",
       "options": [
         {
           "id": "a",
@@ -30725,7 +30335,7 @@
     },
     {
       "id": 1274,
-      "question": "On a psychiatric unit, the preferred milieu environment is BEST described as:",
+      "question": "On a psychiatric unit, the preferred milieu environment is BEST described",
       "options": [
         {
           "id": "a",
@@ -30945,7 +30555,7 @@
     },
     {
       "id": 1301,
-      "question": "Doctor’s order: Tylenol supp 1 g prq q 6 hr prn temp > 101; available: Tylenol supp 325 mg (scored). How many supp will you administer? 1I < 1,000 )I = 1,000 )I 1I = 1,000 )I \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# 325 )I = 3 `a]bc /#4*-I#ℎ $'$,%$+%*",
+      "question": "Doctor’s order: Tylenol supp 1 g prq q 6 hr prn temp > 101; available: Tylenol supp 325 mg (scored). How many supp will you administer?",
       "options": [
         {
           "id": "a",
@@ -30971,7 +30581,7 @@
     },
     {
       "id": 1305,
-      "question": "Doctor’s Order: Cleocin Oral Susp 600 mg po qid; Directions for mixing: Add 100 mL of water and shake vigorously. Each 2.5 mL will contain 100 mg of Cleocin. How many tsp of Cleocin will you administer? \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# < defgahai '\"%()* ()%) `a]bc /#4*-I#ℎ $'$,%$+%* 600 )I < 2.5 )% = 15 )% 100 )I 15 )% < 1 #/= 5 )% = 3 #/=",
+      "question": "Doctor’s Order: Cleocin Oral Susp 600 mg po qid; Directions for mixing: Add 100 mL of water and shake vigorously. Each 2.5 mL will contain 100 mg of Cleocin. How many tsp of Cleocin will you administer?",
       "options": [
         {
           "id": "a",
@@ -30997,7 +30607,7 @@
     },
     {
       "id": 1309,
-      "question": "Doctor’s Order: Heparin 7,855 units Sub Q bid; available; Heparin 10, 000 units per ml. how many mL will you administer? \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# < defgahai '\"%()* ()%) `a]bc /#4*-I#ℎ $'$,%$+%* 7,855 (-,#/ < 1 )% = 0.7855 )% 10,000 (-,#/",
+      "question": "Doctor’s Order: Heparin 7,855 units Sub Q bid; available; Heparin 10, 000 units per ml. how many mL will you administer?",
       "options": [
         {
           "id": "a",
@@ -31049,7 +30659,7 @@
     },
     {
       "id": 1315,
-      "question": "Doctor’s order: 1.5 L of NS to be infused over 7 hours; Drop factor: 15 gtt/ml. What flow rate (mL/hr) will you set on the IV infusion pump? !\"#$% '\"%()* #\" +* ,-.(/*0 ()%) = 1,500 )% = 214.3 )%/ℎ4 !,)* (3\"(4/) 7 ℎ4/",
+      "question": "Doctor’s order: 1.5 L of NS to be infused over 7 hours; Drop factor: 15 gtt/ml. What flow rate (mL/hr) will you set on the IV infusion pump?",
       "options": [
         {
           "id": "a",
@@ -31075,7 +30685,7 @@
     },
     {
       "id": 1320,
-      "question": "500mg of Amoxicillin is prescribed to a patient three times a day, 250mg tablets are available. How many tablets for single dose? = 500 )I \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# 250 )I = 2 `a]bc /#4*-I#ℎ $'$,%$+%*",
+      "question": "500mg of Amoxicillin is prescribed to a patient three times a day, 250mg tablets are available. How many tablets for single dose?",
       "options": [
         {
           "id": "a",
@@ -31101,7 +30711,7 @@
     },
     {
       "id": 1321,
-      "question": "The doctor prescribes a dose of 9 mg of an anticoagulant for a patient being treated for thrombosis. The drug is being supplied in 3mg tablets. How many tablets should you administer? = 9 )I \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# 3 )I = 3 `a]bc /#4*-I#ℎ $'$,%$+%*",
+      "question": "The doctor prescribes a dose of 9 mg of an anticoagulant for a patient being treated for thrombosis. The drug is being supplied in 3mg tablets. How many tablets should you administer?",
       "options": [
         {
           "id": "a",
@@ -31123,7 +30733,7 @@
     },
     {
       "id": 1322,
-      "question": "The doctor prescribes a dose of 9 mg of an anticoagulant for a patient being treated for thrombosis. The drug is being supplied in 3mg tablets. How many tablets should you administer? = 9 )I \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# 3 )I = 3 `a]bc /#4*-I#ℎ $'$,%$+%*",
+      "question": "The doctor prescribes a dose of 9 mg of an anticoagulant for a patient being treated for thrombosis. The drug is being supplied in 3mg tablets. How many tablets should you administer?",
       "options": [
         {
           "id": "a",
@@ -31171,7 +30781,7 @@
     },
     {
       "id": 1329,
-      "question": "The doctor prescribes 25mg of a drug to be given by injection. It is a drug dispensed in a solution of strength 50mg/ml. How many ml should you administer? \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# < defgahai '\"%()* ()%) `a]bc /#4*-I#ℎ $'$,%$+%* 25 )I < 1 )% = 0.5 )% 50 )I",
+      "question": "The doctor prescribes 25mg of a drug to be given by injection. It is a drug dispensed in a solution of strength 50mg/ml. How many ml should you administer?",
       "options": [
         {
           "id": "a",
@@ -31193,7 +30803,7 @@
     },
     {
       "id": 1330,
-      "question": "Mr Bond will require 10 mgs of oromorph. The stock comes in 5 mg/2ml. How much will you draw up from the bottle? \\]^_ =4*/>4,+*0 .\"4 #ℎ* =$#,*-# < defgahai '\"%()* ()%) `a]bc /#4*-I#ℎ $'$,%$+%* 10 )I < 2 )% = 20 )I/)% = 4 )% 5 )I 5 )I",
+      "question": "Mr Bond will require 10 mgs of oromorph. The stock comes in 5 mg/2ml. How much will you draw up from the bottle?",
       "options": [
         {
           "id": "a",
@@ -31271,12 +30881,8 @@
     },
     {
       "id": 1336,
-      "question": "A solution contains 12.5 g of glucose in 0.25 L; what is the percentage concentration (%) of this solution? )% <100% (>\"-/#$-#) = 12.5 I",
+      "question": "A solution contains 12.5 g of glucose in 0.25 L; what is the percentage concentration (%) of this solution?",
       "options": [
-        {
-          "id": "i",
-          "text": "250 )% <100 = 5"
-        },
         {
           "id": "a",
           "text": "5%"
@@ -31297,7 +30903,7 @@
     },
     {
       "id": 1337,
-      "question": "A litre bag of 5% Glucose is prescribed over 4 hours. If a standard giving set is used, at what rate should the drip be set? !\"#$% '\"%()* #\" +* ,-.(/*0 ()%) 04\"= .$>#\"4 < !,)* (3\"(4/) 60 ),-/ℎ4 (>\"-/#$-#) 1,000 )% 4 ℎ\"(4/ < 20 I##/)% 60 ),-/ℎ4 = 20,000 I## 240 ),- = 83.33 I##/),-",
+      "question": "A litre bag of 5% Glucose is prescribed over 4 hours. If a standard giving set is used, at what rate should the drip be set?",
       "options": [
         {
           "id": "a",

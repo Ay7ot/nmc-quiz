@@ -11,6 +11,80 @@ import fitz
 OPTION_LINE = re.compile(r"^([a-z])\)\s*(.*)$", re.IGNORECASE)
 QUESTION_LINE = re.compile(r"^(\d+)\.\s*(.*)$")
 NEXT_QUESTION = re.compile(r"^\d+\.\s")
+FORMULA_PATTERN = re.compile(
+    r"\)\s*%\s*<|"
+    r"I##|"
+    r"ℎ\"|"
+    r"/#\$|"
+    r"#\$\-|"
+    r"[\]\\^_=`]|"
+    r"!\s*[\"']|"
+    r"<\s*[!,]|"
+    r"^\s*[Ii]\)\s*$|"
+    r"^\d+\s*\)\s*%\s*<",
+    re.IGNORECASE,
+)
+
+
+def is_formula_line(text: str) -> bool:
+    text = text.strip()
+    if not text:
+        return True
+    if FORMULA_PATTERN.search(text):
+        return True
+    words = re.findall(r"[a-zA-Z]{4,}", text)
+    symbols = len(re.findall(r"[^a-zA-Z0-9\s.,?!;'\"/\-()%]", text))
+    if not words and symbols >= 2:
+        return True
+    if len(words) <= 1 and symbols >= 3:
+        return True
+    return False
+
+
+def is_question_continuation(text: str) -> bool:
+    if is_formula_line(text):
+        return False
+    opt = OPTION_LINE.match(text)
+    if opt and opt.group(1).lower() != "a":
+        return False
+    return bool(re.search(r"[a-zA-Z]{4,}", text))
+
+
+def clean_question_text(text: str) -> str:
+    text = re.sub(r"\s+", " ", text).strip()
+    cut = re.search(
+        r"(?:"
+        r"[\]\\^_=`]|"
+        r"\)\s*%\s*<|"
+        r"I##|"
+        r"ℎ\"|"
+        r"/#\$|"
+        r"#\$\-|"
+        r"!\s*[\"']"
+        r")",
+        text,
+    )
+    if cut and cut.start() > 20:
+        text = text[: cut.start()].strip()
+    return text
+
+
+def is_readable_question(text: str) -> bool:
+    text = clean_question_text(text)
+    if len(text) < 15:
+        return False
+    if is_formula_line(text):
+        return False
+    words = re.findall(r"[a-zA-Z]{4,}", text)
+    return len(words) >= 3
+
+
+def find_first_option_index(body_lines) -> int | None:
+    for i, line in enumerate(body_lines):
+        match = OPTION_LINE.match(line["text"])
+        if match and match.group(1).lower() == "a":
+            return i
+    return None
 
 
 def is_yellow_fill(fill):
@@ -108,6 +182,18 @@ def parse_question_block(block):
         question_parts.append(first_match.group(2).strip())
 
     body_lines = lines[1:]
+    first_a = find_first_option_index(body_lines)
+    if first_a is None:
+        return None
+
+    for line in body_lines[:first_a]:
+        text = line["text"]
+        if NEXT_QUESTION.match(text):
+            return None
+        if is_question_continuation(text):
+            question_parts.append(text)
+
+    body_lines = body_lines[first_a:]
     options = []
     current_opt = None
     options_started = False
@@ -148,7 +234,8 @@ def parse_question_block(block):
             continue
 
         if not options_started:
-            question_parts.append(text)
+            if is_question_continuation(text):
+                question_parts.append(text)
             idx += 1
             continue
 
@@ -169,13 +256,13 @@ def parse_question_block(block):
     if current_opt:
         options.append(current_opt)
 
-    question_text = re.sub(r"\s+", " ", " ".join(question_parts)).strip()
+    question_text = clean_question_text(" ".join(question_parts))
     for opt in options:
         opt["text"] = re.sub(r"\s+", " ", opt["text"]).strip()
 
     if not question_text or not options:
         return None
-    if len(question_text) < 10:
+    if not is_readable_question(question_text):
         return None
 
     answers = detect_highlighted_answers(options)
