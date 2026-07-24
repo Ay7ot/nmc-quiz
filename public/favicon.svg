@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2A7A72"/>
+      <stop offset="1" stop-color="#1A5C56"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="128" y1="96" x2="384" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#shine)"/>
+  <!-- Cross / care mark -->
+  <rect x="228" y="120" width="56" height="272" rx="28" fill="#FAF8F5"/>
+  <rect x="120" y="228" width="272" height="56" rx="28" fill="#FAF8F5"/>
+  <!-- Quiz check badge -->
+  <circle cx="368" cy="368" r="72" fill="#FAF8F5"/>
+  <path d="M336 368l24 24 48-48" stroke="#1A5C56" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

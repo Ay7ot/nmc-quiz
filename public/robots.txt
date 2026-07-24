@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nmc-quiz.netlify.app/sitemap.xml

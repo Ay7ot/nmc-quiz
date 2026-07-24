@@ -1,0 +1,207 @@
+/**
+ * Design system tokens — Material Design 3 structure adapted for this PWA.
+ * Ref → Sys → Component layering. 4dp base grid. Mobile-first breakpoints.
+ * @see https://m3.material.io/
+ */
+
+:root {
+  /* ── Ref palette (raw) ── */
+  --ref-teal-10: #052923;
+  --ref-teal-20: #0e3d38;
+  --ref-teal-30: #1a5c56;
+  --ref-teal-40: #2a7a72;
+  --ref-teal-90: #c8ebe6;
+  --ref-teal-95: #e4f5f2;
+
+  --ref-neutral-0: #ffffff;
+  --ref-neutral-4: #faf8f5;
+  --ref-neutral-10: #f3efe8;
+  --ref-neutral-20: #e8e2d9;
+  --ref-neutral-50: #78716c;
+  --ref-neutral-60: #57534e;
+  --ref-neutral-90: #1c1917;
+
+  --ref-green-40: #2d6a4f;
+  --ref-green-90: #d1fae5;
+  --ref-red-40: #9b2335;
+  --ref-red-90: #fee2e2;
+  --ref-amber-40: #b8860b;
+  --ref-amber-90: #fef3c7;
+  --ref-rose-40: #c45c4a;
+  --ref-rose-90: rgba(196, 92, 74, 0.12);
+
+  /* ── Sys color (semantic) ── */
+  --sys-color-primary: var(--ref-teal-30);
+  --sys-color-on-primary: var(--ref-neutral-0);
+  --sys-color-primary-container: var(--ref-teal-95);
+  --sys-color-on-primary-container: var(--ref-teal-20);
+
+  --sys-color-surface: var(--ref-neutral-4);
+  --sys-color-surface-container: var(--ref-neutral-0);
+  --sys-color-surface-container-high: var(--ref-neutral-0);
+  --sys-color-surface-container-low: var(--ref-neutral-10);
+  --sys-color-on-surface: var(--ref-neutral-90);
+  --sys-color-on-surface-variant: var(--ref-neutral-50);
+
+  --sys-color-outline: rgba(28, 25, 23, 0.12);
+  --sys-color-outline-variant: rgba(28, 25, 23, 0.08);
+
+  --sys-color-success: var(--ref-green-40);
+  --sys-color-success-container: var(--ref-green-90);
+  --sys-color-error: var(--ref-red-40);
+  --sys-color-error-container: var(--ref-red-90);
+  --sys-color-warning-container: var(--ref-amber-90);
+
+  /* ── Sys typography (M3 roles) ── */
+  --sys-font-brand: "Fraunces", Georgia, serif;
+  --sys-font-plain: "Plus Jakarta Sans", system-ui, sans-serif;
+
+  --sys-type-display-small-size: 2.25rem;
+  --sys-type-display-small-line: 2.75rem;
+  --sys-type-display-small-weight: 500;
+
+  --sys-type-headline-small-size: 1.5rem;
+  --sys-type-headline-small-line: 2rem;
+  --sys-type-headline-small-weight: 500;
+
+  --sys-type-title-medium-size: 1rem;
+  --sys-type-title-medium-line: 1.5rem;
+  --sys-type-title-medium-weight: 600;
+
+  --sys-type-body-large-size: 1rem;
+  --sys-type-body-large-line: 1.5rem;
+  --sys-type-body-medium-size: 0.875rem;
+  --sys-type-body-medium-line: 1.25rem;
+
+  --sys-type-label-large-size: 0.875rem;
+  --sys-type-label-large-weight: 700;
+  --sys-type-label-medium-size: 0.75rem;
+  --sys-type-label-medium-weight: 600;
+  --sys-type-label-small-size: 0.6875rem;
+  --sys-type-label-small-weight: 700;
+
+  /* ── Sys shape (M3 corner scale) ── */
+  --sys-shape-xs: 4px;
+  --sys-shape-sm: 8px;
+  --sys-shape-md: 12px;
+  --sys-shape-lg: 16px;
+  --sys-shape-xl: 28px;
+  --sys-shape-full: 9999px;
+
+  /* ── Sys spacing (4dp grid) ── */
+  --sys-space-1: 4px;
+  --sys-space-2: 8px;
+  --sys-space-3: 12px;
+  --sys-space-4: 16px;
+  --sys-space-5: 20px;
+  --sys-space-6: 24px;
+  --sys-space-8: 32px;
+  --sys-space-10: 40px;
+  --sys-space-12: 48px;
+
+  /* ── Sys elevation ── */
+  --sys-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --sys-elevation-2: 0 2px 6px rgba(0, 0, 0, 0.07), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --sys-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --sys-elevation-primary: 0 8px 24px rgba(26, 92, 86, 0.28);
+
+  /* ── Sys motion (M3 easing) ── */
+  --sys-motion-short: 150ms;
+  --sys-motion-medium: 300ms;
+  --sys-motion-long: 500ms;
+  --sys-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --sys-easing-emphasized: cubic-bezier(0.2, 0, 0, 1.2);
+
+  /* ── Component tokens ── */
+  --comp-touch-min: 48px;
+  --comp-nav-bar-h: 64px;
+  --comp-bottom-bar-h: 72px;
+  --comp-screen-max: 480px;
+  --comp-screen-margin: var(--sys-space-4);
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Legacy aliases (used across App.css) */
+  --ink: var(--sys-color-on-surface);
+  --ink-soft: var(--ref-neutral-60);
+  --ink-muted: var(--sys-color-on-surface-variant);
+  --ink-faint: #a8a29e;
+  --paper: var(--sys-color-surface);
+  --paper-deep: var(--sys-color-surface-container-low);
+  --cream: var(--sys-color-surface-container);
+  --teal: var(--sys-color-primary);
+  --teal-light: var(--ref-teal-40);
+  --teal-soft: var(--sys-color-primary-container);
+  --teal-glow: rgba(26, 92, 86, 0.22);
+  --rose: var(--ref-rose-40);
+  --rose-soft: var(--ref-rose-90);
+  --green: var(--sys-color-success);
+  --green-soft: var(--sys-color-success-container);
+  --red: var(--sys-color-error);
+  --red-soft: var(--sys-color-error-container);
+  --gold: var(--ref-amber-40);
+  --gold-soft: var(--sys-color-warning-container);
+  --line: var(--sys-color-outline-variant);
+  --line-strong: var(--sys-color-outline);
+  --shadow-sm: var(--sys-elevation-1);
+  --shadow-md: var(--sys-elevation-2);
+  --shadow-lg: var(--sys-elevation-3);
+  --shadow-teal: var(--sys-elevation-primary);
+  --radius: var(--sys-shape-xl);
+  --radius-md: var(--sys-shape-lg);
+  --radius-sm: var(--sys-shape-md);
+  --radius-xs: var(--sys-shape-sm);
+  --font-display: var(--sys-font-brand);
+  --font-body: var(--sys-font-plain);
+}
+
+/* M3 typography utility classes */
+.type-display-sm {
+  font-family: var(--sys-font-brand);
+  font-size: var(--sys-type-display-small-size);
+  line-height: var(--sys-type-display-small-line);
+  font-weight: var(--sys-type-display-small-weight);
+  letter-spacing: -0.03em;
+}
+
+.type-headline-sm {
+  font-family: var(--sys-font-brand);
+  font-size: var(--sys-type-headline-small-size);
+  line-height: var(--sys-type-headline-small-line);
+  font-weight: var(--sys-type-headline-small-weight);
+  letter-spacing: -0.02em;
+}
+
+.type-title-md {
+  font-family: var(--sys-font-plain);
+  font-size: var(--sys-type-title-medium-size);
+  line-height: var(--sys-type-title-medium-line);
+  font-weight: var(--sys-type-title-medium-weight);
+}
+
+.type-body-lg {
+  font-family: var(--sys-font-plain);
+  font-size: var(--sys-type-body-large-size);
+  line-height: var(--sys-type-body-large-line);
+}
+
+.type-body-md {
+  font-family: var(--sys-font-plain);
+  font-size: var(--sys-type-body-medium-size);
+  line-height: var(--sys-type-body-medium-line);
+}
+
+.type-label-lg {
+  font-family: var(--sys-font-plain);
+  font-size: var(--sys-type-label-large-size);
+  font-weight: var(--sys-type-label-large-weight);
+}
+
+.type-label-sm {
+  font-family: var(--sys-font-plain);
+  font-size: var(--sys-type-label-small-size);
+  font-weight: var(--sys-type-label-small-weight);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
