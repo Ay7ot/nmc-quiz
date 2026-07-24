@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { BottomNav } from "./components/BottomNav";
 import { HomeScreen } from "./components/HomeScreen";
 import { InstallBanner } from "./components/InstallBanner";
@@ -90,15 +90,21 @@ function App() {
   const loadQuestionState = useCallback(
     (
       qid: number,
-      sessionMode = session?.settings.mode ?? "practice",
-      answers = session?.sessionAnswers,
+      sessionMode: QuizSettings["mode"] = session?.settings.mode ?? "practice",
+      answers: Record<number, { selected: string; correct: boolean }> = session?.sessionAnswers ?? {},
     ) => {
-      const ans = answers?.[qid];
+      const ans = answers[qid];
       setSelected(parseSelection(ans?.selected));
       setRevealed(sessionMode === "practice" && ans != null);
     },
     [session?.sessionAnswers, session?.settings.mode],
   );
+
+  // Reset selection/feedback whenever the active question changes.
+  useEffect(() => {
+    if (screen !== "quiz" || currentId == null || !session) return;
+    loadQuestionState(currentId, session.settings.mode, session.sessionAnswers);
+  }, [screen, currentId, session?.sessionAnswers, session?.settings.mode, loadQuestionState]);
 
   const commitCurrentSelection = useCallback(
     (answers: Record<number, { selected: string; correct: boolean }>) => {
@@ -388,6 +394,7 @@ function App() {
     return (
       <AppShell showNav={false}>
         <QuizScreen
+          key={currentId}
           mode={session.settings.mode ?? "practice"}
           question={current}
           index={session.currentIndex}

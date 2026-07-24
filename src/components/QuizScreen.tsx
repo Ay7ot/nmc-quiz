@@ -67,6 +67,7 @@ export function QuizScreen({
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    setJumpValue("");
   }, [question.id]);
 
   const isCorrect = !isExam && revealed && isAnswerCorrect(question, selected);
