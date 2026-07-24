@@ -41,13 +41,19 @@ export function SessionResults({
   let sub = isExam
     ? "Review your answers below."
     : "Every session gets you closer.";
-  if (pct >= 90) {
+  const answered = record.correct + record.incorrect;
+
+  if (record.skipped > 0) {
+    sub = `${answered} of ${total} answered · ${record.skipped} unanswered. Score is based on all ${total} questions.`;
+  }
+
+  if (pct >= 90 && record.skipped === 0) {
     message = "Brilliant work";
     sub = isExam ? "Outstanding score — review any slips below." : "You're exam-ready on this set.";
-  } else if (pct >= 75) {
+  } else if (pct >= 75 && record.skipped === 0) {
     message = "Strong session";
     sub = "Solid grasp — review the ones you missed.";
-  } else if (pct >= 50) {
+  } else if (pct >= 50 && record.skipped === 0) {
     message = "Good effort";
     sub = "Focus on the review pool next time.";
   }
@@ -129,7 +135,7 @@ export function SessionResults({
         </div>
         <div className="results-stat is-neutral">
           <span className="results-stat-n">{record.skipped}</span>
-          <span className="results-stat-l type-label-sm">Skipped</span>
+          <span className="results-stat-l type-label-sm">Unanswered</span>
         </div>
       </div>
 

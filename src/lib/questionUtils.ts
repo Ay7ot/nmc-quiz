@@ -61,3 +61,20 @@ export function isPlayableQuestion(question: Question): boolean {
   if (question.options.some((opt) => isFormulaArtifact(opt.text))) return false;
   return !question.options.some((opt) => /\b[e-z]\)\s/i.test(opt.text));
 }
+
+export function commitSelection(
+  answers: Record<number, { selected: string; correct: boolean }>,
+  question: Question,
+  selected: string[],
+): Record<number, { selected: string; correct: boolean }> {
+  if (selected.length === 0 || !hasKnownAnswer(question)) return answers;
+  const selectedStr = serializeSelection(selected);
+  if (answers[question.id]?.selected === selectedStr) return answers;
+  return {
+    ...answers,
+    [question.id]: {
+      selected: selectedStr,
+      correct: isAnswerCorrect(question, selected),
+    },
+  };
+}

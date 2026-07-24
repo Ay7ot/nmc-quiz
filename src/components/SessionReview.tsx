@@ -46,7 +46,7 @@ export function SessionReview({ items, defaultFilter = "all" }: SessionReviewPro
           Wrong ({wrongCount})
         </FilterBtn>
         <FilterBtn active={filter === "skipped"} onClick={() => setFilter("skipped")}>
-          Skipped ({skippedCount})
+          Unanswered ({skippedCount})
         </FilterBtn>
       </div>
 
@@ -96,7 +96,7 @@ function ReviewCard({ item }: { item: ReviewItem }) {
       <div className="review-card-head">
         <span className="review-card-num">Q{question.id}</span>
         <span className={`review-status type-label-sm ${status}`}>
-          {isSkipped && "Skipped"}
+          {isSkipped && "Unanswered"}
           {isRight && (
             <>
               <Icon icon={Check} size="xs" /> Correct

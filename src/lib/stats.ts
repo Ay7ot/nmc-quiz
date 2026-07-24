@@ -140,7 +140,7 @@ export function normalizeSession(raw: Partial<SessionRecord> & Pick<SessionRecor
 
   return {
     ...base,
-    scorePercent: raw.scorePercent ?? sessionScorePercent(base),
+    scorePercent: sessionScorePercent(base),
   };
 }
 

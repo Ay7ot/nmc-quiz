@@ -163,6 +163,12 @@ export function QuizScreen({
           <p className="q-note type-body-md">No answer marked in the PDF for this one.</p>
         )}
 
+        {!isExam && !revealed && hasKnownAnswer(question) && (
+          <p className="q-note type-body-md">
+            Tap Check for instant feedback, or move on — your pick is saved automatically.
+          </p>
+        )}
+
         {showFeedback && (
           <div className={`q-feedback ${isCorrect ? "is-right" : "is-wrong"}`}>
             <span className="q-feedback-icon">
@@ -240,25 +246,43 @@ export function QuizScreen({
             )}
           </>
         ) : !revealed ? (
-          <>
-            <button
-              type="button"
-              className="bar-btn bar-btn-main"
-              onClick={onCheck}
-              disabled={!canCheck}
-            >
-              <Icon icon={Check} size="sm" />
-              Check
-            </button>
-            <button
-              type="button"
-              className="bar-btn bar-btn-muted"
-              onClick={onNext}
-              disabled={isLast}
-            >
-              <Icon icon={SkipForward} size="sm" />
-            </button>
-          </>
+          isLast ? (
+            <>
+              <button
+                type="button"
+                className="bar-btn bar-btn-muted"
+                onClick={onCheck}
+                disabled={!canCheck}
+              >
+                <Icon icon={Check} size="sm" />
+                Check
+              </button>
+              <button
+                type="button"
+                className="bar-btn bar-btn-main bar-btn-wide"
+                onClick={onNext}
+              >
+                See results
+                <Icon icon={ArrowRight} size="sm" />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="bar-btn bar-btn-main"
+                onClick={onCheck}
+                disabled={!canCheck}
+              >
+                <Icon icon={Check} size="sm" />
+                Check
+              </button>
+              <button type="button" className="bar-btn bar-btn-muted bar-btn-icon" onClick={onNext}>
+                <Icon icon={SkipForward} size="sm" />
+                <span className="sr-only">Skip</span>
+              </button>
+            </>
+          )
         ) : (
           <button type="button" className="bar-btn bar-btn-main bar-btn-wide" onClick={onNext}>
             {isLast ? "See results" : "Continue"}

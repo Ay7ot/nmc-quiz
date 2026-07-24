@@ -133,10 +133,13 @@ export const DEFAULT_USER_STATS: UserStats = {
   lastSessionScore: null,
 };
 
-export function sessionScorePercent(record: Pick<SessionRecord, "correct" | "incorrect" | "skipped">): number {
-  const answered = record.correct + record.incorrect;
-  if (answered === 0) return 0;
-  return Math.round((record.correct / answered) * 100);
+export function sessionScorePercent(
+  record: Pick<SessionRecord, "correct" | "incorrect" | "skipped" | "questionIds">,
+): number {
+  const total =
+    record.questionIds?.length ?? record.correct + record.incorrect + record.skipped;
+  if (total === 0) return 0;
+  return Math.round((record.correct / total) * 100);
 }
 
 export function sizeBucket(questionCount: number): string {

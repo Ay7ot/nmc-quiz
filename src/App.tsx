@@ -10,10 +10,12 @@ import { StatsScreen } from "./components/StatsScreen";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import questionBank from "./data/questions.json";
 import { useProgress } from "./hooks/useProgress";
+import { useConfirm } from "./hooks/useConfirm";
 import { useSessions } from "./hooks/useSessions";
 import { useSettings } from "./hooks/useSettings";
 import { buildSessionOrder, filterQuestions, sessionId } from "./lib/quizEngine";
 import {
+  commitSelection,
   hasKnownAnswer,
   isAnswerCorrect,
   isMultiSelect,
@@ -34,6 +36,7 @@ import "./App.css";
 const ALL_QUESTIONS = (questionBank.questions as Question[]).filter(isPlayableQuestion);
 
 function App() {
+  const confirm = useConfirm();
   const { settings, updateSettings } = useSettings();
   const { progress, recordAnswer, resetProgress, answered, correct, wrong } =
     useProgress();
@@ -77,12 +80,31 @@ function App() {
   const sessionAnswered = Object.keys(sessionAnswers).length;
 
   const loadQuestionState = useCallback(
-    (qid: number, sessionMode = session?.settings.mode ?? "practice") => {
-      const ans = session?.sessionAnswers[qid];
+    (
+      qid: number,
+      sessionMode = session?.settings.mode ?? "practice",
+      answers = session?.sessionAnswers,
+    ) => {
+      const ans = answers?.[qid];
       setSelected(parseSelection(ans?.selected));
       setRevealed(sessionMode === "practice" && ans != null);
     },
     [session?.sessionAnswers, session?.settings.mode],
+  );
+
+  const commitCurrentSelection = useCallback(
+    (answers: Record<number, { selected: string; correct: boolean }>) => {
+      if (!session || session.settings.mode === "exam" || !current || selected.length === 0) {
+        return answers;
+      }
+      const next = commitSelection(answers, current, selected);
+      if (next !== answers) {
+        const entry = next[current.id];
+        recordAnswer(current.id, entry.selected, entry.correct);
+      }
+      return next;
+    },
+    [session, current, selected, recordAnswer],
   );
 
   const beginSession = useCallback(
@@ -116,10 +138,11 @@ function App() {
     (idx: number) => {
       if (!session) return;
       const clamped = Math.max(0, Math.min(idx, session.questionIds.length - 1));
-      updateActiveSession({ currentIndex: clamped });
-      loadQuestionState(session.questionIds[clamped]);
+      const answers = commitCurrentSelection(session.sessionAnswers);
+      updateActiveSession({ currentIndex: clamped, sessionAnswers: answers });
+      loadQuestionState(session.questionIds[clamped], session.settings.mode, answers);
     },
-    [session, updateActiveSession, loadQuestionState],
+    [session, updateActiveSession, loadQuestionState, commitCurrentSelection],
   );
 
   const buildReviewItems = useCallback(
@@ -143,10 +166,14 @@ function App() {
     [questionMap],
   );
 
-  const finishSession = useCallback(() => {
+  const finishSession = useCallback(async () => {
     if (!session) return;
 
-    const answers = session.sessionAnswers;
+    const answers = commitCurrentSelection(session.sessionAnswers);
+    if (answers !== session.sessionAnswers) {
+      updateActiveSession({ sessionAnswers: answers });
+    }
+
     let correctN = 0;
     let incorrectN = 0;
     let skippedN = 0;
@@ -159,9 +186,12 @@ function App() {
     }
 
     if (session.settings.mode === "exam" && skippedN > 0) {
-      const ok = confirm(
-        `You have ${skippedN} unanswered question${skippedN > 1 ? "s" : ""}. Submit anyway?`,
-      );
+      const ok = await confirm({
+        title: "Submit test?",
+        message: `You have ${skippedN} unanswered question${skippedN > 1 ? "s" : ""}. Submit anyway?`,
+        confirmLabel: "Submit anyway",
+        cancelLabel: "Keep going",
+      });
       if (!ok) return;
     }
 
@@ -171,13 +201,20 @@ function App() {
       new Date(completedAt).getTime() - new Date(session.startedAt).getTime(),
     );
 
-    const partial = { correct: correctN, incorrect: incorrectN, skipped: skippedN };
+    const partial = {
+      correct: correctN,
+      incorrect: incorrectN,
+      skipped: skippedN,
+      questionIds: session.questionIds,
+    };
     const record: SessionRecord = {
       id: session.id,
       startedAt: session.startedAt,
       completedAt,
       questionIds: session.questionIds,
-      ...partial,
+      correct: correctN,
+      incorrect: incorrectN,
+      skipped: skippedN,
       scorePercent: sessionScorePercent(partial),
       durationMs,
       settings: session.settings,
@@ -185,9 +222,11 @@ function App() {
 
     const prevBest = userStats.bestScore?.scorePercent ?? -1;
     const answeredCount = correctN + incorrectN;
+    const completionRate = answeredCount / session.questionIds.length;
     setPreviousSessionScore(userStats.lastSessionScore);
     setIsNewHighScore(
       answeredCount > 0 &&
+        completionRate >= 0.8 &&
         (userStats.bestScore == null || record.scorePercent > prevBest),
     );
 
@@ -195,7 +234,15 @@ function App() {
     completeSession(record, answers);
     setLastResult(record);
     setScreen("results");
-  }, [session, completeSession, userStats, buildReviewItems]);
+  }, [
+    session,
+    commitCurrentSelection,
+    updateActiveSession,
+    completeSession,
+    userStats,
+    buildReviewItems,
+    confirm,
+  ]);
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -328,8 +375,15 @@ function App() {
           totalQuestions={ALL_QUESTIONS.length}
           answered={answered}
           correct={correct}
-          onClearHistory={() => {
-            if (confirm("Clear all session history and stats?")) clearHistory();
+          onClearHistory={async () => {
+            const ok = await confirm({
+              title: "Clear all history?",
+              message: "This removes every session score, chart, and stat from this device. Your question progress is kept.",
+              confirmLabel: "Clear everything",
+              cancelLabel: "Keep history",
+              destructive: true,
+            });
+            if (ok) clearHistory();
           }}
         />
       </AppShell>
@@ -351,8 +405,15 @@ function App() {
         onStart={() => beginSession(false)}
         onResume={() => beginSession(true)}
         onViewStats={() => setScreen("stats")}
-        onResetProgress={() => {
-          if (confirm("Reset question progress? Session stats are kept.")) {
+        onResetProgress={async () => {
+          const ok = await confirm({
+            title: "Reset question progress?",
+            message: "All per-question answers and attempts will be cleared. Session stats and history are kept.",
+            confirmLabel: "Reset progress",
+            cancelLabel: "Cancel",
+            destructive: true,
+          });
+          if (ok) {
             resetProgress();
             discardActiveSession();
           }
