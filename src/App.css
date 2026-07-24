@@ -1422,6 +1422,8 @@
 .install-banner-copy strong { font-size: 1rem; }
 .install-banner-copy span { font-size: 0.875rem; color: var(--ink-muted); }
 .install-banner-cta { flex-shrink: 0; min-height: 36px; padding: 0 var(--sys-space-4); border: none; border-radius: var(--sys-shape-full); background: var(--teal); color: #fff; font-weight: 700; font-size: 0.875rem; cursor: pointer; }
+.install-banner-ios .install-banner-copy span strong { color: var(--teal); font-weight: 700; }
+.install-banner-ios { padding-right: var(--sys-space-3); }
 .install-banner-close { flex-shrink: 0; width: 32px; height: 32px; border: none; background: var(--paper-deep); border-radius: 50%; color: var(--ink-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .update-toast { position: fixed; bottom: calc(var(--safe-bottom) + var(--sys-space-4)); left: var(--sys-space-4); right: var(--sys-space-4); max-width: 480px; margin: 0 auto; z-index: 110; display: flex; align-items: center; justify-content: space-between; gap: var(--sys-space-4); padding: var(--sys-space-3) var(--sys-space-4); background: var(--ink); color: var(--cream); border-radius: var(--sys-shape-lg); box-shadow: var(--sys-elevation-3); font-size: 0.875rem; font-weight: 600; }
 .update-toast-btn { display: inline-flex; align-items: center; gap: var(--sys-space-2); border: none; background: var(--teal-light); color: #fff; padding: var(--sys-space-2) var(--sys-space-4); border-radius: var(--sys-shape-full); font-weight: 700; font-size: 0.875rem; cursor: pointer; white-space: nowrap; }
