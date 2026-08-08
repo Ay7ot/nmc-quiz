@@ -2,6 +2,7 @@ import { BarChart3, Home, RefreshCw, Sparkles, Trophy, TrendingUp } from "lucide
 import { Icon } from "./Icon";
 import { SessionReview, type ReviewItem } from "./SessionReview";
 import type { QuizMode, SessionRecord } from "../types";
+import { quizModeLabel } from "../types";
 
 interface SessionResultsProps {
   record: SessionRecord;
@@ -27,7 +28,7 @@ export function SessionResults({
   const total = record.questionIds.length;
   const pct = record.scorePercent;
   const mode: QuizMode = record.settings.mode ?? "practice";
-  const isExam = mode === "exam";
+  const isExamination = mode === "exam" || mode === "timed";
   const duration = Math.round(record.durationMs / 1000);
   const mins = Math.floor(duration / 60);
   const secs = duration % 60;
@@ -37,8 +38,8 @@ export function SessionResults({
       ? pct - previousScore
       : null;
 
-  let message = isExam ? "Test complete" : "Keep practising";
-  let sub = isExam
+  let message = isExamination ? "Test complete" : "Keep practising";
+  let sub = isExamination
     ? "Review your answers below."
     : "Every session gets you closer.";
   const answered = record.correct + record.incorrect;
@@ -49,7 +50,7 @@ export function SessionResults({
 
   if (pct >= 90 && record.skipped === 0) {
     message = "Brilliant work";
-    sub = isExam ? "Outstanding score — review any slips below." : "You're exam-ready on this set.";
+    sub = isExamination ? "Outstanding score — review any slips below." : "You're exam-ready on this set.";
   } else if (pct >= 75 && record.skipped === 0) {
     message = "Strong session";
     sub = "Solid grasp — review the ones you missed.";
@@ -59,7 +60,7 @@ export function SessionResults({
   }
 
   const tier = pct >= 75 ? "good" : pct >= 50 ? "mid" : "low";
-  const showReview = reviewItems.length > 0 && (isExam || record.incorrect > 0);
+  const showReview = reviewItems.length > 0 && (isExamination || record.incorrect > 0);
 
   return (
     <div className="screen results-screen results-scroll">
@@ -82,8 +83,8 @@ export function SessionResults({
         </div>
       )}
 
-      {isExam && (
-        <div className="mode-result-badge type-label-sm">Exam mode</div>
+      {isExamination && (
+        <div className="mode-result-badge type-label-sm">{quizModeLabel(mode)} mode</div>
       )}
 
       <div className="results-hero">
@@ -150,14 +151,14 @@ export function SessionResults({
       {showReview && (
         <SessionReview
           items={reviewItems}
-          defaultFilter={isExam ? "all" : "wrong"}
+          defaultFilter={isExamination ? "all" : "wrong"}
         />
       )}
 
       <div className="results-actions">
         <button type="button" className="btn btn-primary" onClick={onRetry}>
           <Icon icon={RefreshCw} size="sm" />
-          {isExam ? "Take again" : "Practice again"}
+          {isExamination ? "Take again" : "Practice again"}
         </button>
         <button type="button" className="btn btn-ghost" onClick={onStats}>
           <Icon icon={BarChart3} size="sm" />

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BottomNav } from "./components/BottomNav";
 import { HomeScreen } from "./components/HomeScreen";
 import { InstallBanner } from "./components/InstallBanner";
@@ -61,6 +61,9 @@ function App() {
   const [previousSessionScore, setPreviousSessionScore] = useState<number | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [revealed, setRevealed] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  const autoSubmittedRef = useRef(false);
 
   const questionMap = useMemo(
     () => new Map(ALL_QUESTIONS.map((q) => [q.id, q])),
@@ -87,6 +90,19 @@ function App() {
   const sessionCorrect = Object.values(sessionAnswers).filter((a) => a.correct).length;
   const sessionAnswered = Object.keys(sessionAnswers).length;
 
+  const timedSession = session?.settings.mode === "timed" ? session : null;
+  const deadlineMs = timedSession
+    ? new Date(timedSession.startedAt).getTime() +
+      timedSession.settings.timeLimitMin * 60_000
+    : 0;
+  const remainingMs = timedSession ? Math.max(0, deadlineMs - now) : null;
+
+  useEffect(() => {
+    if (!timedSession) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [timedSession]);
+
   const loadQuestionState = useCallback(
     (
       qid: number,
@@ -95,7 +111,9 @@ function App() {
     ) => {
       const ans = answers[qid];
       setSelected(parseSelection(ans?.selected));
-      setRevealed(sessionMode === "practice" && ans != null);
+      setRevealed(
+        sessionMode === "read" || (sessionMode === "practice" && ans != null),
+      );
     },
     [session?.sessionAnswers, session?.settings.mode],
   );
@@ -132,6 +150,8 @@ function App() {
       const sessionSettings = { ...settings, ...overrides };
       const ids = buildSessionOrder(ALL_QUESTIONS, progress, sessionSettings);
       if (ids.length === 0) return;
+
+      autoSubmittedRef.current = false;
 
       const newSession: ActiveSession = {
         id: sessionId(),
@@ -212,8 +232,15 @@ function App() {
 
   const finishSession = useCallback(async (
     answersOverride?: Record<number, { selected: string; correct: boolean }>,
+    autoSubmit = false,
   ) => {
     if (!session) return;
+
+    if (session.settings.mode === "read") {
+      discardActiveSession();
+      setScreen("home");
+      return;
+    }
 
     const baseAnswers = answersOverride ?? session.sessionAnswers;
     const answers = commitCurrentSelection(baseAnswers);
@@ -232,7 +259,8 @@ function App() {
       else incorrectN++;
     }
 
-    if (session.settings.mode === "exam" && skippedN > 0) {
+    const isExamination = session.settings.mode === "exam" || session.settings.mode === "timed";
+    if (isExamination && skippedN > 0 && !autoSubmit) {
       const ok = await confirm({
         title: "Submit test?",
         message: `You have ${skippedN} unanswered question${skippedN > 1 ? "s" : ""}. Submit anyway?`,
@@ -286,10 +314,18 @@ function App() {
     commitCurrentSelection,
     updateActiveSession,
     completeSession,
+    discardActiveSession,
     userStats,
     buildReviewItems,
     confirm,
   ]);
+
+  useEffect(() => {
+    if (!timedSession || remainingMs == null || remainingMs > 0) return;
+    if (autoSubmittedRef.current) return;
+    autoSubmittedRef.current = true;
+    void finishSession(undefined, true);
+  }, [timedSession, remainingMs, finishSession]);
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -308,7 +344,8 @@ function App() {
     if (!current || selected.length === 0 || !session || !hasKnownAnswer(current)) return;
     const isCorrect = isAnswerCorrect(current, selected);
     const selectedStr = serializeSelection(selected);
-    const isExam = session.settings.mode === "exam";
+    const isExamination =
+      session.settings.mode === "exam" || session.settings.mode === "timed";
     const nextAnswers = {
       ...session.sessionAnswers,
       [current.id]: { selected: selectedStr, correct: isCorrect },
@@ -316,7 +353,7 @@ function App() {
 
     recordAnswer(current.id, selectedStr, isCorrect);
 
-    if (isExam) {
+    if (isExamination) {
       if (session.currentIndex >= session.questionIds.length - 1) {
         void finishSession(nextAnswers);
       } else {
@@ -330,12 +367,21 @@ function App() {
 
   const handleNext = useCallback(() => {
     if (!session) return;
+    if (session.settings.mode === "read") {
+      if (session.currentIndex >= session.questionIds.length - 1) {
+        discardActiveSession();
+        setScreen("home");
+      } else {
+        goToIndex(session.currentIndex + 1);
+      }
+      return;
+    }
     if (session.currentIndex >= session.questionIds.length - 1) {
       finishSession();
       return;
     }
     goToIndex(session.currentIndex + 1);
-  }, [session, finishSession, goToIndex]);
+  }, [session, finishSession, goToIndex, discardActiveSession]);
 
   const handlePrev = useCallback(() => {
     if (!session) return;
@@ -360,7 +406,7 @@ function App() {
   }, []);
 
   useAutoAdvance(
-    session?.settings.mode !== "exam" && settings.autoAdvance,
+    session?.settings.mode === "practice" && settings.autoAdvance,
     settings.autoAdvanceDelayMs,
     revealed,
     handleNext,
@@ -404,6 +450,7 @@ function App() {
           shuffleOptions={session.settings.shuffleOptions}
           selected={selected}
           revealed={revealed}
+          remainingMs={remainingMs}
           onSelect={handleSelect}
           onCheck={handleCheck}
           onNext={handleNext}

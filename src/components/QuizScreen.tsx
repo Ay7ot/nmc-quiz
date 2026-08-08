@@ -6,6 +6,7 @@ import {
   Hash,
   Send,
   SkipForward,
+  Timer,
   Trophy,
   X,
 } from "lucide-react";
@@ -30,6 +31,7 @@ interface QuizScreenProps {
   shuffleOptions: boolean;
   selected: string[];
   revealed: boolean;
+  remainingMs: number | null;
   onSelect: (id: string) => void;
   onCheck: () => void;
   onNext: () => void;
@@ -48,6 +50,7 @@ export function QuizScreen({
   shuffleOptions,
   selected,
   revealed,
+  remainingMs,
   onSelect,
   onCheck,
   onNext,
@@ -56,9 +59,15 @@ export function QuizScreen({
   onJump,
 }: QuizScreenProps) {
   const [jumpValue, setJumpValue] = useState("");
-  const isExam = mode === "exam";
+  const isQuickQuiz = mode === "practice";
+  const isPractice = mode === "exam";
+  const isExam = mode === "timed";
+  const isRead = mode === "read";
+  const isExamination = isPractice || isExam;
   const multiSelect = isMultiSelect(question);
   const correctAnswers = getCorrectAnswers(question);
+  const showAnswers = isRead || (isQuickQuiz && revealed);
+  const showFeedback = isQuickQuiz && revealed;
 
   const options = useMemo(() => {
     const opts = [...question.options];
@@ -70,14 +79,18 @@ export function QuizScreen({
     setJumpValue("");
   }, [question.id]);
 
-  const isCorrect = !isExam && revealed && isAnswerCorrect(question, selected);
+  const isCorrect = showFeedback && isAnswerCorrect(question, selected);
   const isLast = index >= total - 1;
   const progressPct = ((index + 1) / total) * 100;
-  const showFeedback = !isExam && revealed;
   const canCheck = selected.length > 0 && hasKnownAnswer(question);
 
+  const timerMins = remainingMs != null ? Math.floor(remainingMs / 60_000) : 0;
+  const timerSecs =
+    remainingMs != null ? Math.floor((remainingMs % 60_000) / 1000) : 0;
+  const timerUrgent = remainingMs != null && remainingMs <= 60_000;
+
   return (
-    <div className={`screen quiz-screen ${isExam ? "exam-mode" : "practice-mode"}`}>
+    <div className={`screen quiz-screen ${isRead ? "read-mode" : isExamination ? "exam-mode" : "practice-mode"}`}>
       <div className="ambient ambient-a" aria-hidden />
       <div className="ambient ambient-c" aria-hidden />
 
@@ -97,9 +110,18 @@ export function QuizScreen({
         </div>
 
         {isExam ? (
+          <div className={`quiz-timer-chip type-label-sm ${timerUrgent ? "urgent" : ""}`}>
+            <Icon icon={Timer} size="xs" />
+            <span>
+              {timerMins}:{String(timerSecs).padStart(2, "0")}
+            </span>
+          </div>
+        ) : isPractice ? (
           <div className="quiz-answered-chip type-label-sm">
             {sessionAnswered}/{total}
           </div>
+        ) : isRead ? (
+          <div className="quiz-answered-chip type-label-sm">Read</div>
         ) : (
           <div className="quiz-score-chip">
             <Icon icon={Trophy} size="xs" />
@@ -110,9 +132,17 @@ export function QuizScreen({
         )}
       </header>
 
-      {isExam && (
+      {isExamination && (
         <div className="exam-banner type-body-md">
-          Exam mode — answers hidden until you submit
+          {isExam
+            ? "Exam mode — countdown running, answers hidden until you submit"
+            : "Practice mode — answers hidden until you submit"}
+        </div>
+      )}
+
+      {isRead && (
+        <div className="exam-banner type-body-md">
+          Read mode — correct answers are shown on each question
         </div>
       )}
 
@@ -136,7 +166,7 @@ export function QuizScreen({
             const isRightAnswer = correctAnswers.includes(opt.id);
             let state = "";
             if (isPicked) state = "picked";
-            if (showFeedback && isRightAnswer) state = "right";
+            if (showAnswers && isRightAnswer) state = "right";
             if (showFeedback && isPicked && !isRightAnswer) state = "wrong";
 
             return (
@@ -146,13 +176,14 @@ export function QuizScreen({
                 role={multiSelect ? "checkbox" : "radio"}
                 aria-checked={isPicked}
                 className={`q-opt ${state}`}
-                onClick={() => onSelect(opt.id)}
+                onClick={() => !isRead && onSelect(opt.id)}
+                disabled={isRead}
                 style={{ animationDelay: `${i * 40}ms` }}
               >
                 <span className="q-opt-marker">{opt.id.toUpperCase()}</span>
                 <span className="q-opt-body type-body-lg">{opt.text}</span>
                 <span className="q-opt-ring" aria-hidden />
-                {showFeedback && isRightAnswer && (
+                {showAnswers && isRightAnswer && (
                   <Icon icon={Check} size="sm" className="q-opt-check" />
                 )}
               </button>
@@ -164,7 +195,13 @@ export function QuizScreen({
           <p className="q-note type-body-md">No answer marked in the PDF for this one.</p>
         )}
 
-        {!isExam && !revealed && hasKnownAnswer(question) && (
+        {isRead && (
+          <p className="q-note type-body-md">
+            Read the question and the highlighted correct answer — no checking needed.
+          </p>
+        )}
+
+        {!isExamination && !isRead && !revealed && hasKnownAnswer(question) && (
           <p className="q-note type-body-md">
             Tap Check for instant feedback, or move on — your pick is saved automatically.
           </p>
@@ -195,7 +232,7 @@ export function QuizScreen({
           </div>
         )}
 
-        {!isExam && (
+        {isQuickQuiz && !revealed && (
           <div className="q-jump">
             <Icon icon={Hash} size="sm" className="q-jump-icon" />
             <input
@@ -229,7 +266,7 @@ export function QuizScreen({
           Back
         </button>
 
-        {isExam ? (
+        {isExamination ? (
           <>
             <button
               type="button"
@@ -246,6 +283,15 @@ export function QuizScreen({
               </button>
             )}
           </>
+        ) : isRead ? (
+          <button
+            type="button"
+            className="bar-btn bar-btn-main bar-btn-wide"
+            onClick={onNext}
+          >
+            {isLast ? "Done" : "Next"}
+            <Icon icon={ArrowRight} size="sm" />
+          </button>
         ) : !revealed ? (
           isLast ? (
             <>

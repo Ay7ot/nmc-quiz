@@ -1,12 +1,13 @@
 import {
   ArrowRight,
-  BookOpen,
   ClipboardCheck,
+  Eye,
   Filter,
   Hash,
   Shuffle,
   SlidersHorizontal,
   Timer,
+  Zap,
 } from "lucide-react";
 import type { QuizSettings } from "../types";
 import { SESSION_SIZE_PRESETS } from "../types";
@@ -43,8 +44,8 @@ export function SettingsForm({
             className={`mode-card ${settings.mode === "practice" ? "on" : ""}`}
             onClick={() => onChange({ mode: "practice" })}
           >
-            <Icon icon={BookOpen} size="md" />
-            <span className="mode-card-title type-label-lg">Practice</span>
+            <Icon icon={Zap} size="md" />
+            <span className="mode-card-title type-label-lg">Quick Quiz</span>
             <span className="mode-card-desc">See answers instantly when you check</span>
           </button>
           <button
@@ -53,8 +54,26 @@ export function SettingsForm({
             onClick={() => onChange({ mode: "exam", autoAdvance: false })}
           >
             <Icon icon={ClipboardCheck} size="md" />
-            <span className="mode-card-title type-label-lg">Exam</span>
+            <span className="mode-card-title type-label-lg">Practice</span>
             <span className="mode-card-desc">No hints until submit — then review all</span>
+          </button>
+          <button
+            type="button"
+            className={`mode-card ${settings.mode === "timed" ? "on" : ""}`}
+            onClick={() => onChange({ mode: "timed", autoAdvance: false })}
+          >
+            <Icon icon={Timer} size="md" />
+            <span className="mode-card-title type-label-lg">Exam</span>
+            <span className="mode-card-desc">Countdown timer — auto-submits when time&rsquo;s up</span>
+          </button>
+          <button
+            type="button"
+            className={`mode-card ${settings.mode === "read" ? "on" : ""}`}
+            onClick={() => onChange({ mode: "read", autoAdvance: false })}
+          >
+            <Icon icon={Eye} size="md" />
+            <span className="mode-card-title type-label-lg">Read</span>
+            <span className="mode-card-desc">Correct answers shown directly on each question</span>
           </button>
         </div>
       </div>
@@ -147,7 +166,7 @@ export function SettingsForm({
           hint="Next after check"
           checked={settings.autoAdvance}
           onChange={(v) => onChange({ autoAdvance: v })}
-          disabled={settings.mode === "exam"}
+          disabled={settings.mode === "exam" || settings.mode === "timed" || settings.mode === "read"}
         />
       </div>
 
@@ -168,6 +187,29 @@ export function SettingsForm({
             value={settings.autoAdvanceDelayMs}
             onChange={(e) =>
               onChange({ autoAdvanceDelayMs: parseInt(e.target.value, 10) })
+            }
+            className="slider"
+          />
+        </div>
+      )}
+
+      {settings.mode === "timed" && (
+        <div className="field field-slider">
+          <div className="field-inline spread">
+            <span className="field-label type-label-sm">
+              <Icon icon={Timer} size="xs" className="inline-icon" />
+              Session time
+            </span>
+            <span className="field-value">{settings.timeLimitMin}m</span>
+          </div>
+          <input
+            type="range"
+            min={5}
+            max={180}
+            step={5}
+            value={settings.timeLimitMin}
+            onChange={(e) =>
+              onChange({ timeLimitMin: parseInt(e.target.value, 10) })
             }
             className="slider"
           />

@@ -18,6 +18,7 @@ import {
   sessionWrongQuestionIds,
 } from "../lib/reviewUtils";
 import type { Question, SessionRecord } from "../types";
+import { quizModeLabel } from "../types";
 
 interface ReviewScreenProps {
   sessions: SessionRecord[];
@@ -159,7 +160,7 @@ function SessionChip({
 }) {
   const tier = scoreTier(session.scorePercent);
   const hasData = sessionHasReviewData(session);
-  const mode = session.settings.mode === "exam" ? "Exam" : "Practice";
+  const mode = quizModeLabel(session.settings.mode);
 
   return (
     <button
@@ -198,7 +199,7 @@ function SessionSummary({
   onPracticeWrong?: () => void;
 }) {
   const tier = scoreTier(session.scorePercent);
-  const mode = session.settings.mode === "exam" ? "Exam mode" : "Practice mode";
+  const mode = quizModeLabel(session.settings.mode);
   const date = formatSessionDate(session.completedAt);
 
   return (

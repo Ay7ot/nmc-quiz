@@ -33,8 +33,24 @@ export type ProgressMap = Record<number, ProgressEntry>;
 
 export type QuestionFilter = "all" | "unanswered" | "wrong";
 
-/** practice = instant feedback on check · exam = answers revealed after submit */
-export type QuizMode = "practice" | "exam";
+/**
+ * practice = Quick Quiz — instant feedback on check
+ * exam = Practice — answers hidden until submit, then review all
+ * timed = Exam — like Practice but with a countdown timer that auto-submits
+ * read = Read — correct answers shown directly on each question
+ */
+export type QuizMode = "practice" | "exam" | "timed" | "read";
+
+export const QUIZ_MODE_LABELS: Record<QuizMode, string> = {
+  practice: "Quick Quiz",
+  exam: "Practice",
+  timed: "Exam",
+  read: "Read",
+};
+
+export function quizModeLabel(mode: QuizMode): string {
+  return QUIZ_MODE_LABELS[mode] ?? mode;
+}
 
 export interface QuizSettings {
   mode: QuizMode;
@@ -44,6 +60,8 @@ export interface QuizSettings {
   autoAdvance: boolean;
   autoAdvanceDelayMs: number;
   shuffleOptions: boolean;
+  /** Total time budget in minutes for a timed (Exam) session */
+  timeLimitMin: number;
 }
 
 export interface SessionRecord {
@@ -120,6 +138,7 @@ export const DEFAULT_SETTINGS: QuizSettings = {
   autoAdvance: false,
   autoAdvanceDelayMs: 1500,
   shuffleOptions: false,
+  timeLimitMin: 30,
 };
 
 export const DEFAULT_USER_STATS: UserStats = {
